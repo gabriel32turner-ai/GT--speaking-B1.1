@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GT Session — Main</title>
+<!--
+  ============================================================================
+  GT SESSION BOILERPLATE v1 · Gabriel Turner English Training
+  ----------------------------------------------------------------------------
+  CÓMO SE USA: se edita ÚNICAMENTE el objeto SESSION al inicio del <script>.
+  El resto del archivo es motor y no se toca salvo que se agregue una mecánica
+  nueva al catálogo. Un módulo se activa por la PRESENCIA de sus datos:
+  si SESSION.pairs existe se renderiza Collocation Match; si no, no aparece.
+  Docs de referencia: GT_SOP_Generacion_Sesiones_v1.md ·
+  GT_Catalogo_Funcionalidades_Interactivas_v1.md · GT_Sistema_Diseno_v1.md ·
+  GT_QA_Sesiones_Checklist_v1.md
+  Contenido de ejemplo cargado: B1.1 · Sesión 7 · "Is AI Going to Take My Job?"
+  ============================================================================
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* marca fija */
+    --gt-green-deep:#0E5C43; --gt-green:#12B886; --gt-copper:#D96A28;
+    --paper:#F7F4EC; --paper-soft:#EFEADD; --line:#DCD5C4;
+    --ink:#15181F; --ink-soft:#4A4E5A; --navy:#0B0F17; --white:#fff;
+    --green-ok:#12A150; --red-no:#D93025;
+    /* acento por nivel — lo inyecta el JS según SESSION.accent */
+    --accent:#00C2A0; --accent-dark:#00947A;
+    /* funcionales fijos */
+    --coral:#FF5A5F; --coral-dark:#B7311B; --amber:#FFB020; --amber-dark:#B8790A;
+    --violet:#6C5CE7; --violet-soft:#F3F0FF;
+    --radius-block:24px; --radius-card:16px; --radius-pill:999px;
+    --shadow:0 10px 30px rgba(11,15,23,.08); --shadow-lg:0 20px 50px rgba(11,15,23,.14);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; font-family:'Manrope',system-ui,sans-serif; background:var(--paper);
+    color:var(--ink); line-height:1.55; -webkit-font-smoothing:antialiased; padding-bottom:88px;
+  }
+  body.present{zoom:1.22;}
+  img{max-width:100%; display:block;}
+  button{font-family:inherit;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 22px;}
+  .hidden{display:none !important;}
+  h2 svg, h3 svg, h4 svg, h5 svg{width:17px; height:17px; flex-shrink:0;}
+
+  /* ===== COMMAND BAR (N6) ===== */
+  .cmdbar{position:sticky; top:0; z-index:60; background:rgba(11,15,23,.96);
+    backdrop-filter:blur(10px); color:#fff; border-bottom:1px solid rgba(255,255,255,.12);}
+  body.flat .cmdbar{background:var(--navy);}
+  .cmd-inner{max-width:1080px; margin:0 auto; padding:9px 22px; display:flex;
+    align-items:center; gap:12px; flex-wrap:wrap;}
+  .brand{display:flex; align-items:center; gap:9px; font-weight:800; font-size:12px; letter-spacing:.5px;}
+  .brand-mark{width:27px; height:27px; border-radius:9px; flex-shrink:0; color:var(--navy);
+    background:linear-gradient(135deg,var(--gt-green),var(--accent));
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11px;}
+  .chip-lvl{background:color-mix(in srgb, var(--accent) 18%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 50%, transparent); color:var(--accent);
+    padding:4px 11px; border-radius:var(--radius-pill); font-size:11.5px; font-weight:800; letter-spacing:.4px;}
+  .cmd-spacer{flex:1;}
+  .meter{display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.16); padding:4px 10px 4px 5px; border-radius:var(--radius-pill);}
+  .meter-label{font-size:9px; text-transform:uppercase; letter-spacing:.9px; color:rgba(255,255,255,.55); font-weight:800; line-height:1.1;}
+  .meter-val{font-size:15px; font-weight:800; line-height:1.15; font-variant-numeric:tabular-nums;}
+  .meter-val small{font-size:10px; font-weight:700; opacity:.55;}
+  .icon-btn{width:29px; height:29px; border-radius:50%; border:none; cursor:pointer; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; background:var(--gt-green); color:var(--navy);
+    transition:transform .15s ease, background .15s ease;}
+  .icon-btn:hover{transform:scale(1.07);}
+  .icon-btn.on{background:var(--coral); color:#fff;}
+  .icon-btn svg{width:13px; height:13px;}
+  .toggle{display:flex; align-items:center; gap:7px; cursor:pointer; user-select:none;
+    font-size:11.5px; font-weight:800; color:rgba(255,255,255,.8); background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.16); padding:6px 12px; border-radius:var(--radius-pill); transition:all .15s ease;}
+  .toggle:hover{background:rgba(255,255,255,.14);}
+  .toggle input{display:none;}
+  .toggle .sw{width:29px; height:16px; border-radius:999px; background:rgba(255,255,255,.22);
+    position:relative; transition:background .18s ease; flex-shrink:0;}
+  .toggle .sw::after{content:""; position:absolute; top:2px; left:2px; width:12px; height:12px;
+    border-radius:50%; background:#fff; transition:transform .18s ease;}
+  .toggle input:checked + .sw{background:var(--gt-green);}
+  .toggle input:checked + .sw::after{transform:translateX(13px);}
+  .progress-rail{height:4px; background:rgba(255,255,255,.12);}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--gt-green),var(--accent)); transition:width .35s ease;}
+
+  /* ===== HERO ===== */
+  .hero{background:
+      radial-gradient(circle at 12% 20%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 45%),
+      linear-gradient(135deg,var(--gt-green-deep) 0%, #10151F 62%, var(--navy) 100%);
+    color:#fff; padding:38px 0 44px; position:relative; overflow:hidden;}
+  body.flat .hero{background:var(--gt-green-deep);}
+  .hero::after{content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:36px 36px; mask-image:radial-gradient(circle at 50% 30%, black, transparent 72%);}
+  body.flat .hero::after{display:none;}
+  .hero-inner{position:relative; z-index:2;}
+  .hero h1{margin:6px 0 10px; font-size:clamp(28px,5vw,46px); font-weight:800; letter-spacing:-.6px; max-width:840px;}
+  .hero h1 em{color:var(--accent); font-style:normal;}
+  .hero p.sub{max-width:660px; color:rgba(255,255,255,.74); font-size:16px; margin:0;}
+  .hero-meta{display:flex; gap:26px; margin-top:24px; flex-wrap:wrap;}
+  .hero-meta div{font-size:13px; color:rgba(255,255,255,.6);}
+  .hero-meta b{color:#fff;}
+
+  /* ===== WORD BANK (N1) ===== */
+  .bank{background:linear-gradient(135deg,#12161F,#1B1030); color:#fff; border-bottom:1px solid rgba(255,255,255,.1);}
+  body.flat .bank{background:#12161F;}
+  .bank-inner{max-width:1080px; margin:0 auto; padding:15px 22px 17px;}
+  .bank-head{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:11px;}
+  .bank-head h2{margin:0; font-size:13.5px; font-weight:800; display:flex; align-items:center; gap:8px;}
+  .bank-head h2 svg{color:var(--accent);}
+  .bank-count{font-size:12.5px; font-weight:800; padding:3px 11px; border-radius:var(--radius-pill);
+    background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent);
+    border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); font-variant-numeric:tabular-nums;}
+  .bank-hint{font-size:11.5px; color:rgba(255,255,255,.5); margin-left:auto;}
+  .bank-grid{display:flex; flex-wrap:wrap; gap:7px;}
+  .wchip{background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.16);
+    color:rgba(255,255,255,.78); padding:6px 12px; border-radius:var(--radius-pill);
+    font-size:12.5px; font-weight:700; cursor:pointer; transition:all .16s ease;}
+  .wchip:hover{border-color:var(--accent); color:#fff;}
+  .wchip.v{border-style:dashed;}
+  .wchip.used{background:var(--accent); border-color:var(--accent); color:var(--navy); font-weight:800;
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);}
+  .wchip.v.used{background:var(--amber); border-color:var(--amber);}
+  .bank-legend{display:flex; gap:16px; margin-top:11px; font-size:11px; color:rgba(255,255,255,.45); flex-wrap:wrap;}
+  .bank-legend span{display:flex; align-items:center; gap:6px;}
+  .lg-dot{width:9px; height:9px; border-radius:50%;}
+
+  /* ===== SECTION SHELL ===== */
+  .sect{background:var(--white); border:1px solid var(--line); border-radius:var(--radius-block);
+    padding:26px; margin:22px 0; box-shadow:var(--shadow);}
+  .sect.big{border:2px solid #FFDCC9; background:linear-gradient(180deg,#FFF9F5,#fff);}
+  .sect.dark{background:linear-gradient(135deg,#12161F,#1B1030); color:#fff; border:none;}
+  body.flat .sect.dark{background:#12161F;}
+  .sect.dark .kicker, .sect.dark .sect-desc{color:rgba(255,255,255,.6);}
+  .sect.dark .sect-title{color:#fff;}
+  .sect-head{display:flex; align-items:flex-start; gap:14px; margin-bottom:4px;}
+  .sect-ico{width:42px; height:42px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .sect-ico svg{width:21px; height:21px;}
+  .kicker{font-size:10.5px; text-transform:uppercase; letter-spacing:1.2px; font-weight:800; color:var(--ink-soft); margin:2px 0;}
+  .sect-title{font-size:clamp(21px,2.8vw,28px); font-weight:800; margin:0; letter-spacing:-.4px;}
+  .time-tag{margin-left:auto; flex-shrink:0; font-size:11px; font-weight:800; letter-spacing:.3px;
+    background:var(--paper-soft); border:1px solid var(--line); color:var(--ink-soft);
+    padding:5px 11px; border-radius:var(--radius-pill); white-space:nowrap;}
+  .time-tag.core{background:rgba(255,90,95,.1); border-color:#FFCFC9; color:var(--coral-dark);}
+  .sect.dark .time-tag{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.2); color:rgba(255,255,255,.75);}
+  .sect-desc{color:var(--ink-soft); font-size:15px; margin:12px 0 20px; max-width:730px;}
+  h3.blk{font-size:17.5px; font-weight:800; margin:26px 0 10px; display:flex; align-items:center; gap:9px;}
+  .mini{font-size:13px; color:var(--ink-soft); margin:0 0 14px;}
+  .done-btn{display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:transparent;
+    border:1.5px dashed var(--line); color:var(--ink-soft); padding:8px 16px; border-radius:var(--radius-pill);
+    font-size:12.5px; font-weight:800; transition:all .16s ease; margin-top:20px;}
+  .done-btn:hover{border-color:var(--green-ok); color:var(--green-ok);}
+  .done-btn.on{background:rgba(18,161,80,.1); border:1.5px solid var(--green-ok); color:var(--green-ok);}
+  body.student .teacher-only{display:none !important;}
+  .t-flag{font-size:9.5px; text-transform:uppercase; letter-spacing:.8px; font-weight:800;
+    color:var(--violet); background:var(--violet-soft); border:1px solid #E2DBFF; padding:2px 8px; border-radius:var(--radius-pill);}
+  .sect.dark .t-flag{background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.2); color:#C9C1FF;}
+
+  /* ===== BOTONES ===== */
+  .btn{display:inline-flex; align-items:center; gap:8px; cursor:pointer; border:none; background:var(--navy);
+    color:#fff; padding:10px 18px; border-radius:var(--radius-pill); font-size:13px; font-weight:800;
+    transition:transform .15s ease;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn svg{width:14px; height:14px;}
+  .btn.coral{background:var(--coral);} .btn.green{background:var(--gt-green-deep);}
+  .btn.violet{background:var(--violet);}
+  .btn.ghost{background:#fff; color:var(--ink); border:1.5px solid var(--line);}
+  .btn.ghost:hover{border-color:var(--ink);}
+  .sect.dark .btn.ghost{background:rgba(255,255,255,.08); color:#fff; border-color:rgba(255,255,255,.22);}
+  .btn.sm{padding:7px 14px; font-size:12px;}
+  .spk{background:none; border:none; cursor:pointer; color:inherit; padding:0; display:inline-flex; align-items:center;}
+  .spk svg{width:13px; height:13px;}
+
+  /* ===== WARM-UP ===== */
+  .warm-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px;}
+  .ice{background:linear-gradient(160deg,var(--paper-soft),#fff); border:1.5px solid var(--line);
+    border-radius:var(--radius-card); padding:20px;}
+  .ice .lbl{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:1px; font-weight:800;
+    color:var(--accent-dark); margin-bottom:6px;}
+  .ice p{margin:0; font-size:15.5px; font-weight:700; line-height:1.45;}
+  .recall{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
+  .recall button{background:#fff; border:1.5px solid var(--line); padding:7px 13px; border-radius:var(--radius-pill);
+    font-size:13px; font-weight:700; cursor:pointer; color:var(--ink); transition:all .15s ease;}
+  .recall button:hover{border-color:var(--accent-dark); color:var(--accent-dark);}
+  .recall button.on{background:var(--accent); border-color:var(--accent); color:var(--navy);}
+  ol.qlist{margin:0; padding-left:20px; font-size:15px;}
+  ol.qlist li{margin-bottom:7px;}
+
+  /* ===== VOCABULARY ===== */
+  .vlabel{display:flex; align-items:center; gap:10px; font-weight:800; font-size:14.5px; margin:24px 0 14px;}
+  .vgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(228px,1fr)); gap:13px; align-items:stretch;}
+  .vcard{background:#fff; border:1px solid var(--line); border-radius:var(--radius-card); padding:15px;
+    box-shadow:var(--shadow); transition:transform .18s ease, box-shadow .18s ease;
+    display:flex; flex-direction:column;}
+  .vcard .mine{margin-top:auto;}
+  .vcard .vcol{align-self:flex-start;}
+  .vcard:hover{transform:translateY(-3px); box-shadow:var(--shadow-lg);}
+  .vcard.n{border-top:3px solid var(--accent);} .vcard.v{border-top:3px solid var(--amber);}
+  .vtop{display:flex; align-items:flex-start; gap:8px;}
+  .vword{font-weight:800; font-size:16.5px; margin:0 0 4px; flex:1;}
+  .vdef{font-size:13.5px; color:var(--ink-soft); margin:0 0 9px; min-height:34px;}
+  .vcol{font-size:12px; font-weight:800; margin-bottom:9px; display:inline-block; padding:3px 8px; border-radius:6px;
+    color:var(--accent-dark); background:color-mix(in srgb, var(--accent) 10%, transparent);}
+  .vcard.v .vcol{color:var(--amber-dark); background:rgba(255,176,32,.13);}
+  .vchk{display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-soft); cursor:pointer; user-select:none; margin-bottom:9px;}
+  .vchk input{accent-color:var(--coral); width:14px; height:14px; cursor:pointer;}
+  .mine{border-top:1px dashed var(--line); padding-top:8px;}
+  .mine label{font-size:10px; text-transform:uppercase; letter-spacing:.6px; color:#9A9482; font-weight:800;}
+  .mine input{width:100%; border:none; border-bottom:1.5px solid var(--line); background:transparent;
+    padding:6px 2px; font-family:inherit; font-size:13.5px; color:var(--ink); outline:none; margin-top:2px;}
+  .mine input:focus{border-bottom-color:var(--accent);}
+  .cgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); gap:13px;}
+  .ccard{background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:15px;}
+  .cph{font-weight:800; font-size:15px; color:var(--accent); margin:0 0 6px; display:flex; align-items:center; gap:8px;}
+  .cmn{font-size:13px; color:rgba(255,255,255,.78); margin:0 0 7px;}
+  .cex{font-size:13px; font-style:italic; color:rgba(255,255,255,.55); margin:0;}
+
+  /* ===== GRAMMAR ===== */
+  .ghit{display:flex; gap:14px; align-items:flex-start; background:#FFF3E9; border:1px solid #FFDCC9;
+    border-radius:var(--radius-card); padding:15px 17px;}
+  .ghit svg{width:24px; height:24px; flex-shrink:0; color:var(--coral);}
+  .ghit h4{margin:0 0 5px; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; color:var(--coral-dark);}
+  .ghit p{margin:0 0 8px; font-size:14px; color:var(--ink-soft);}
+  .gex{font-size:13.5px; background:#fff; display:inline-block; padding:4px 10px; border-radius:8px;
+    margin:3px 6px 0 0; border:1px solid #FFDCC9;}
+
+  /* ===== SORT (C5) ===== */
+  .sort-status{display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:var(--paper-soft);
+    border:1px solid var(--line); border-radius:12px; padding:10px 14px; font-size:12.5px;
+    font-weight:800; color:var(--ink-soft); margin-bottom:14px;}
+  .sort-status.ok{background:rgba(18,161,80,.09); border-color:#A9DFC0; color:var(--green-ok);}
+  .sort-status svg{width:15px; height:15px; flex-shrink:0;}
+  .pool{display:flex; flex-wrap:wrap; gap:8px; padding:14px; border-radius:14px; background:var(--paper-soft);
+    border:1.5px dashed var(--line); min-height:58px; margin-bottom:16px;}
+  .tchip{background:#fff; border:1.5px solid var(--line); padding:8px 14px; border-radius:var(--radius-pill);
+    font-size:13px; font-weight:700; cursor:grab; transition:all .15s ease; user-select:none; color:var(--ink);}
+  .tchip:hover{border-color:var(--coral); color:var(--coral-dark);}
+  .tchip.sel{background:var(--coral); border-color:var(--coral); color:#fff; box-shadow:0 0 0 4px rgba(255,90,95,.2);}
+  .tchip.drag{opacity:.4;}
+  .cols{display:grid; grid-template-columns:repeat(auto-fit,minmax(206px,1fr)); gap:14px;}
+  .col{background:#fff; border:1.5px solid var(--line); border-radius:var(--radius-card); padding:14px;
+    min-height:148px; transition:all .16s ease;}
+  .col.over{border-color:var(--coral); background:#FFF8F6; transform:translateY(-2px);}
+  .col.armed{border-style:dashed; border-color:var(--coral);}
+  .col h5{margin:0; font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .col .cnt{margin-left:auto; font-size:11px; font-weight:800; color:#B3AC98;}
+  .col ul{list-style:none; margin:8px 0 0; padding:0;}
+  .col li{display:flex; align-items:center; gap:8px; font-size:12.5px; background:var(--paper);
+    border:1px solid var(--line); border-radius:9px; padding:6px 8px; margin-bottom:6px;}
+  .col li button{margin-left:auto; background:none; border:none; cursor:pointer; color:#B3AC98; font-size:15px; line-height:1; padding:0 2px;}
+  .col li button:hover{color:var(--coral);}
+  .col .empty{font-size:12px; color:#B3AC98; text-align:center; padding:15px 4px;
+    border:1px dashed var(--line); border-radius:9px; margin-top:8px;}
+  .starters{font-size:12.5px; color:#9A9482; margin-top:14px;}
+  .starters code{background:var(--paper-soft); border:1px solid var(--line); padding:3px 8px;
+    border-radius:6px; color:var(--ink); font-family:inherit; font-weight:700;}
+
+  /* ===== QUESTION ENGINE (N3) ===== */
+  .qengine{background:linear-gradient(160deg,#fff,#FFF6F3); border:1.5px solid #FFDCC9;
+    border-radius:20px; padding:22px;}
+  .q-top{display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+  .q-num{font-size:11px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--coral-dark);
+    background:#fff; border:1px solid #FFDCC9; padding:5px 12px; border-radius:var(--radius-pill);}
+  .q-tag{font-size:10px; text-transform:uppercase; letter-spacing:.7px; font-weight:800; color:#9A9482;}
+  .q-text{font-size:clamp(18px,2.4vw,23px); font-weight:800; line-height:1.4; margin:0 0 18px; letter-spacing:-.3px;}
+  .ring-row{display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:14px;}
+  .ring{position:relative; width:74px; height:74px; flex-shrink:0;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring .bg{stroke:#FFE3D8;} .ring .fg{stroke:var(--coral); stroke-linecap:round; transition:stroke-dashoffset .95s linear;}
+  .ring.done .fg{stroke:var(--green-ok);}
+  .ring .num{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:19px; font-variant-numeric:tabular-nums;}
+  .secs{display:flex; gap:6px;}
+  .secs button{background:#fff; border:1.5px solid var(--line); color:var(--ink-soft); cursor:pointer;
+    padding:6px 11px; border-radius:var(--radius-pill); font-size:11.5px; font-weight:800;}
+  .secs button.on{background:var(--coral); border-color:var(--coral); color:#fff;}
+  .push-box{background:#fff; border-left:3px solid var(--coral); border-radius:0 12px 12px 0;
+    padding:12px 15px; margin-bottom:10px; font-size:14.5px; font-weight:700;}
+  .push-box .lbl{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:.9px;
+    font-weight:800; color:var(--coral-dark); margin-bottom:4px;}
+  .again{background:#fff; border:1px dashed var(--line); border-radius:14px; padding:14px 16px; margin-top:6px;}
+  .again h5{margin:0 0 4px; font-size:12.5px; font-weight:800; display:flex; align-items:center; gap:7px;}
+  .again p{margin:0 0 10px; font-size:12.5px; color:var(--ink-soft);}
+  .pass-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .pass{border:1.5px solid var(--line); background:var(--paper); color:var(--ink-soft); padding:8px 13px;
+    border-radius:12px; font-size:12.5px; font-weight:800; cursor:pointer; text-align:left;
+    transition:all .16s ease; flex:1 1 176px;}
+  .pass:hover{border-color:var(--accent-dark); color:var(--accent-dark);}
+  .pass.on{background:var(--accent); border-color:var(--accent); color:var(--navy);}
+  .pass small{display:block; font-weight:700; font-size:11px; opacity:.75; margin-top:2px;}
+  .q-nav{display:flex; gap:10px; align-items:center; margin-top:18px; flex-wrap:wrap;}
+  .q-dots{display:flex; gap:5px; margin-left:auto;}
+  .q-dots i{width:7px; height:7px; border-radius:50%; background:#E8DFCE; display:block;}
+  .q-dots i.on{background:var(--coral); transform:scale(1.3);}
+  .q-dots i.past{background:#FFB3AF;}
+
+  /* ===== COLLOCATIONS (B1) ===== */
+  .coll-wrap{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .coll-col h5{margin:0 0 10px; font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:800; color:#9A9482;}
+  .cbtn{display:block; width:100%; text-align:left; background:#fff; border:1.5px solid var(--line);
+    border-radius:12px; padding:11px 14px; margin-bottom:8px; font-size:13.5px; font-weight:800;
+    cursor:pointer; transition:all .15s ease; color:var(--ink);}
+  .cbtn:hover{border-color:var(--accent-dark);}
+  .cbtn.sel{background:var(--accent-dark); border-color:var(--accent-dark); color:#fff;}
+  .cbtn.matched{background:color-mix(in srgb, var(--accent) 12%, transparent); border-color:var(--accent);
+    color:var(--accent-dark); cursor:default; opacity:.78;}
+  .cbtn.wrong{animation:shake .32s ease; border-color:var(--red-no); color:var(--red-no);}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .coll-score{display:flex; align-items:center; gap:10px; margin-top:14px; font-size:13px; font-weight:800;
+    color:var(--ink-soft); flex-wrap:wrap;}
+  .built{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
+  .built span{background:color-mix(in srgb, var(--accent) 12%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 40%, transparent); color:var(--accent-dark);
+    padding:6px 11px; border-radius:var(--radius-pill); font-size:12.5px; font-weight:800;
+    display:flex; align-items:center; gap:7px;}
+
+  /* ===== SENTENCE BUILDER (B3) ===== */
+  .sb-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:10px;}
+  .sb-row label{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:.9px;
+    font-weight:800; color:#9A9482; margin-bottom:5px;}
+  .sb-row select{width:100%; font-family:inherit; font-size:13px; font-weight:700; color:var(--ink);
+    padding:10px 11px; border:1.5px solid var(--line); border-radius:12px; background:#fff; cursor:pointer;}
+  .sb-row select:focus{outline:none; border-color:var(--accent);}
+  .sb-out{margin-top:16px; background:var(--navy); color:#fff; border-radius:var(--radius-card);
+    padding:19px 21px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  body.flat .sb-out{background:#12161F;}
+  .sb-out p{margin:0; font-size:clamp(15px,2.1vw,19px); font-weight:800; line-height:1.4; flex:1 1 240px;}
+  .sb-out .spk{background:var(--accent); color:var(--navy); border-radius:50%; width:37px; height:37px;
+    justify-content:center; flex-shrink:0;}
+  .sb-out .spk svg{width:16px; height:16px;}
+
+  /* ===== OPINE (C1 + C4) ===== */
+  .opine-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(286px,1fr)); gap:16px;}
+  .ocard{background:linear-gradient(165deg,var(--violet-soft),#fff); border:1.5px solid #E2DBFF;
+    border-radius:18px; padding:20px; display:flex; flex-direction:column;}
+  .oc-top{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .oc-av{width:38px; height:38px; border-radius:50%; background:var(--violet); color:#fff; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;}
+  .oc-name{font-size:12px; font-weight:800; color:var(--violet); margin:0; line-height:1.3;}
+  .oc-role{font-size:11px; color:var(--ink-soft); margin:0;}
+  .oc-quote{font-size:14.5px; font-style:italic; margin:0 0 14px; line-height:1.5;}
+  .slider-box{background:#fff; border:1px solid #E2DBFF; border-radius:14px; padding:13px 15px; margin-bottom:12px;}
+  .sl-ends{display:flex; justify-content:space-between; gap:14px; font-size:9.5px; text-transform:uppercase;
+    letter-spacing:.7px; font-weight:800; color:#B3AC98; margin-bottom:6px;}
+  .sl-ends span:last-child{text-align:right;}
+  input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:999px;
+    background:linear-gradient(90deg,var(--coral),#E8DFCE,var(--gt-green)); outline:none; cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:22px; height:22px; border-radius:50%;
+    background:var(--violet); border:3px solid #fff; box-shadow:0 2px 8px rgba(108,92,231,.45); cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; background:var(--violet);
+    border:3px solid #fff; box-shadow:0 2px 8px rgba(108,92,231,.45); cursor:pointer;}
+  .sl-read{display:flex; align-items:baseline; gap:8px; margin-top:9px;}
+  .sl-num{font-size:22px; font-weight:800; color:var(--violet); font-variant-numeric:tabular-nums; line-height:1;}
+  .sl-word{font-size:12px; font-weight:800; color:var(--ink-soft);}
+  .sl-why{font-size:12px; color:var(--coral-dark); font-weight:800; margin:9px 0 0;}
+  .oc-actions{margin-top:auto; display:flex; gap:8px; flex-wrap:wrap;}
+  .devil{background:var(--navy); color:#fff; border-radius:14px; padding:14px 16px; margin-top:12px;}
+  body.flat .devil{background:#12161F;}
+  .devil .lbl{font-size:9.5px; text-transform:uppercase; letter-spacing:1px; font-weight:800;
+    color:var(--amber); display:block; margin-bottom:5px;}
+  .devil p{margin:0; font-size:13px; color:rgba(255,255,255,.86);}
+  .dtimer{display:inline-flex; align-items:center; gap:7px; margin-top:10px; background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.2); color:#fff; padding:6px 13px; border-radius:var(--radius-pill);
+    font-size:12px; font-weight:800; cursor:pointer; font-variant-numeric:tabular-nums;}
+
+  /* ===== ROLEPLAY (D1 + D2) ===== */
+  .rp-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:16px;}
+  .rp{border-radius:18px; overflow:hidden; border:1.5px solid var(--line); background:#fff;
+    display:flex; flex-direction:column;}
+  .rp-img{height:104px; position:relative; background:linear-gradient(135deg,var(--gt-green-deep),var(--navy));}
+  .rp-img img{width:100%; height:100%; object-fit:cover; opacity:.72;}
+  .rp-img .tag{position:absolute; top:12px; left:12px; background:#fff; color:var(--navy); font-size:10.5px;
+    font-weight:800; letter-spacing:.9px; text-transform:uppercase; padding:5px 11px; border-radius:var(--radius-pill);}
+  .rp-body{padding:17px 18px 18px; display:flex; flex-direction:column; flex:1;}
+  .rp-body h4{margin:0 0 3px; font-size:15.5px; font-weight:800;}
+  .rp-body .who{font-size:12px; color:var(--ink-soft); margin:0 0 12px;}
+  .goal{background:var(--paper-soft); border:1px dashed var(--line); border-radius:12px; padding:12px 14px;
+    font-size:13px; margin-bottom:2px;}
+  .goal .lbl{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:.9px;
+    font-weight:800; color:#9A9482; margin-bottom:4px;}
+  .rp-lines{margin:9px 0 0; padding-left:17px; font-size:12.5px; color:var(--ink-soft);}
+  .rp-lines li{margin-bottom:4px;}
+  .curve{margin-top:16px; background:linear-gradient(135deg,#FFF3E9,#fff); border:1.5px solid #FFDCC9;
+    border-radius:var(--radius-card); padding:16px 18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .curve p{margin:0; flex:1 1 220px; font-size:14px; font-weight:800;}
+  .curve .lbl{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:1px;
+    font-weight:800; color:var(--coral-dark); margin-bottom:3px;}
+
+  /* ===== RANKING (C6) + WYR (C8) ===== */
+  .rank-list{list-style:none; margin:0 0 14px; padding:0; counter-reset:r;}
+  .rank-list li{counter-increment:r; display:flex; align-items:center; gap:12px; background:#fff;
+    border:1.5px solid var(--line); border-radius:14px; padding:11px 14px; margin-bottom:8px;
+    font-size:14px; font-weight:700; cursor:grab; transition:all .15s ease;}
+  .rank-list li.drag{opacity:.35;}
+  .rank-list li.over{border-color:var(--violet); transform:translateX(4px);}
+  .rank-list li::before{content:counter(r); flex-shrink:0; width:26px; height:26px; border-radius:8px;
+    background:var(--violet); color:#fff; font-weight:800; font-size:12.5px;
+    display:flex; align-items:center; justify-content:center;}
+  .rk-arrows{margin-left:auto; display:flex; gap:4px; flex-shrink:0;}
+  .rk-arrows button{width:26px; height:26px; border-radius:8px; border:1px solid var(--line);
+    background:var(--paper); cursor:pointer; color:var(--ink-soft); display:flex;
+    align-items:center; justify-content:center; padding:0;}
+  .rk-arrows button:hover{border-color:var(--violet); color:var(--violet);}
+  .rk-arrows svg{width:12px; height:12px;}
+  .wyr{display:grid; grid-template-columns:repeat(auto-fit,minmax(238px,1fr)); gap:14px;}
+  .wyr button{background:#fff; border:1.5px solid var(--line); border-radius:var(--radius-card);
+    padding:18px 20px; text-align:left; cursor:pointer; font-size:14px; font-weight:800;
+    color:var(--ink); transition:all .16s ease;}
+  .wyr button:hover{border-color:var(--amber); transform:translateY(-2px);}
+  .wyr button.on{background:rgba(255,176,32,.12); border-color:var(--amber);}
+  .wyr button span{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:1px;
+    color:var(--amber-dark); font-weight:800; margin-bottom:6px;}
+
+  /* ===== LISTENING ===== */
+  .lis-player{background:var(--paper-soft); border:1.5px solid var(--line); border-radius:var(--radius-card);
+    padding:18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:16px;}
+  .lis-player audio{flex:1 1 240px; min-width:0;}
+  .lis-live{background:linear-gradient(160deg,var(--paper-soft),#fff); border-left:4px solid var(--accent);
+    border-radius:0 var(--radius-card) var(--radius-card) 0; padding:16px 18px; margin-bottom:16px;}
+  .lis-live .lbl{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:1px;
+    font-weight:800; color:var(--accent-dark); margin-bottom:6px;}
+  .lis-live p{margin:0 0 8px; font-size:14.5px; line-height:1.6;}
+  .lis-live .pace{font-size:12px; color:var(--ink-soft); font-weight:800;}
+  .acc{border:1px solid var(--line); border-radius:12px; margin-bottom:9px; overflow:hidden; background:#fff;}
+  .acc > button{width:100%; text-align:left; background:#fff; border:none; cursor:pointer; padding:13px 15px;
+    font-size:14px; font-weight:800; color:var(--ink); display:flex; align-items:center; gap:10px;}
+  .acc > button:hover{background:var(--paper);}
+  .acc > button .chev{margin-left:auto; transition:transform .2s ease; font-size:12px; color:#B3AC98;}
+  .acc.open > button .chev{transform:rotate(180deg);}
+  .acc .body{padding:0 15px 14px; font-size:13.5px; color:var(--ink-soft);}
+
+  /* ===== CHECKUP ===== */
+  .cu-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px;}
+  .cu{background:#fff; border:1.5px solid var(--line); border-radius:var(--radius-card); padding:17px;}
+  .cu .lbl{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:1px; font-weight:800;
+    color:var(--coral-dark); margin-bottom:6px;}
+  .cu p{margin:0 0 10px; font-size:14.5px; font-weight:700;}
+  .cu input{width:100%; border:none; border-bottom:1.5px solid var(--line); background:transparent;
+    padding:7px 2px; font-family:inherit; font-size:13.5px; outline:none;}
+  .cu input:focus{border-bottom-color:var(--accent);}
+  .carry{display:flex; flex-wrap:wrap; gap:7px; margin-top:12px;}
+  .carry button{background:#fff; border:1.5px solid var(--line); padding:6px 12px; border-radius:var(--radius-pill);
+    font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink);}
+  .carry button.on{background:var(--gt-green); border-color:var(--gt-green); color:#fff;}
+
+  /* ===== EVIDENCE LOG (N5) ===== */
+  .log-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;}
+  .log-grid label{font-size:9.5px; text-transform:uppercase; letter-spacing:.9px; font-weight:800; display:block;}
+  .log-grid .l1 label{color:#FF8F93;} .log-grid .l2 label{color:var(--gt-green);}
+  .lrow{display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:center; margin-bottom:8px;}
+  .lrow input{width:100%; font-family:inherit; font-size:13px; padding:10px 12px; border-radius:11px;
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.18); color:#fff;}
+  .lrow input::placeholder{color:rgba(255,255,255,.32);}
+  .lrow input:focus{outline:none; border-color:var(--gt-green);}
+  .lrow .del{background:none; border:1px solid rgba(255,255,255,.2); color:rgba(255,255,255,.5);
+    width:32px; height:32px; border-radius:9px; cursor:pointer; font-size:15px; line-height:1;}
+  .lrow .del:hover{color:var(--coral); border-color:var(--coral);}
+  .qtags{display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 12px;}
+  .qtags button{background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.18);
+    color:rgba(255,255,255,.8); padding:8px 13px; border-radius:var(--radius-pill);
+    font-size:12px; font-weight:800; cursor:pointer;}
+  .qtags button:hover{border-color:var(--gt-green); color:#fff;}
+  .stamps{list-style:none; margin:0; padding:0; max-height:148px; overflow:auto;}
+  .stamps li{font-size:12.5px; color:rgba(255,255,255,.7); padding:6px 0;
+    border-bottom:1px solid rgba(255,255,255,.08); display:flex; gap:10px;}
+  .stamps li b{color:var(--gt-green); font-variant-numeric:tabular-nums; flex-shrink:0;}
+  .log-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .guard{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); border-radius:14px;
+    padding:15px 17px; margin-top:16px;}
+  .guard h5{margin:0 0 8px; font-size:12px; text-transform:uppercase; letter-spacing:.9px; font-weight:800; color:var(--amber);}
+  .guard ul{margin:0; padding-left:18px; font-size:13px; color:rgba(255,255,255,.75);}
+  .guard li{margin-bottom:5px;}
+
+  /* ===== FLOATING FOOTER ===== */
+  .float{position:fixed; bottom:0; left:0; right:0; z-index:55; background:rgba(247,244,236,.94);
+    backdrop-filter:blur(10px); border-top:1px solid var(--line); padding:9px 0;}
+  .float-inner{max-width:1080px; margin:0 auto; padding:0 22px; display:flex; align-items:center;
+    gap:14px; flex-wrap:wrap; font-size:12.5px; font-weight:800; color:var(--ink-soft);}
+  .float .stat{display:flex; align-items:center; gap:7px;}
+  .float .stat b{color:var(--ink); font-size:15px; font-variant-numeric:tabular-nums;}
+  .float .stat svg{width:14px; height:14px; color:var(--accent-dark);}
+
+  @media (max-width:720px){
+    .coll-wrap, .log-grid{grid-template-columns:1fr;}
+    .lrow{grid-template-columns:1fr auto;}
+    .bank-hint{display:none;}
+    .sect{padding:20px 17px; border-radius:20px;}
+    body.present{zoom:1;}
+  }
+  @media print{
+    body{background:#fff; padding:0;}
+    .cmdbar,.float,.done-btn,.btn,.secs,.qtags,.log-actions,.rk-arrows,.spk,.dtimer{display:none !important;}
+    .bank,.sect.dark,.sb-out,.devil,.hero{background:#fff !important; color:#000 !important; border:1px solid #000 !important;}
+    .hero::after{display:none;}
+    .hero h1,.hero p.sub,.hero-meta div,.hero-meta b,.brand{color:#000 !important;}
+    .wchip,.stamps li,.lrow input,.cmn,.cex,.guard ul{color:#000 !important; border-color:#666 !important;}
+    .sect{break-inside:avoid; page-break-inside:avoid; box-shadow:none; margin:12px 0;}
+    .vcard,.ccard,.ocard,.rp,.col,.qengine,.cu,.acc{break-inside:avoid; page-break-inside:avoid;}
+    .teacher-only{display:block !important;}
+    .acc .body{display:block !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cmdbar">
+  <div class="cmd-inner">
+    <div class="brand"><span class="brand-mark">GT</span> <span id="brandTxt">GT ENGLISH TRAINING</span></div>
+    <span class="chip-lvl" id="lvlChip">B1.1</span>
+    <div class="cmd-spacer"></div>
+    <div class="meter">
+      <button class="icon-btn" id="talkBtn" aria-label="Start or pause student talk time">
+        <svg id="talkIco" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <div>
+        <div class="meter-label">Student talk time</div>
+        <div class="meter-val"><span id="talkVal">00:00</span> <small id="talkTarget">/ 28:00</small></div>
+      </div>
+    </div>
+    <label class="toggle" title="Hide everything the student should not read in advance">
+      <input type="checkbox" id="studentMode"><span class="sw"></span> Student view
+    </label>
+    <label class="toggle" title="Bigger type and flat backgrounds for screen sharing">
+      <input type="checkbox" id="presentMode"><span class="sw"></span> Present
+    </label>
+  </div>
+  <div class="progress-rail"><div class="progress-fill" id="progFill"></div></div>
+</div>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <p class="kicker" id="heroKicker" style="color:rgba(255,255,255,.6)"></p>
+    <h1 id="heroTitle"></h1>
+    <p class="sub" id="heroSub"></p>
+    <div class="hero-meta" id="heroMeta"></div>
+  </div>
+</header>
+
+<div class="bank">
+  <div class="bank-inner">
+    <div class="bank-head">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="8" width="18" height="13" rx="3"/><path d="M12 2v6m0 0 3-3m-3 3L9 5"/><path d="M8 14h8"/></svg>
+        Live Word Bank
+      </h2>
+      <span class="bank-count" id="bankCount">0 / 20 used</span>
+      <span class="bank-hint">Tap a word the moment the student uses it naturally in speech.</span>
+    </div>
+    <div class="bank-grid" id="bankGrid"></div>
+    <div class="bank-legend">
+      <span><i class="lg-dot" style="background:var(--accent)"></i> 10 words</span>
+      <span><i class="lg-dot" style="background:var(--amber)"></i> 10 verbs (dashed)</span>
+      <span id="bankTarget"></span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="main"></main>
+
+<div class="float">
+  <div class="float-inner">
+    <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Talk time <b id="fTalk">00:00</b></div>
+    <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h10M4 17h13"/></svg> Words used <b id="fWords">0/20</b></div>
+    <div class="stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Blocks done <b id="fBlocks">0/0</b></div>
+    <div class="stat" id="fCollWrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 12h6"/><rect x="2" y="8" width="7" height="8" rx="2.5"/><rect x="15" y="8" width="7" height="8" rx="2.5"/></svg> Collocations <b id="fColl">0/0</b></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   ▼▼▼  ÚNICA ZONA EDITABLE  ▼▼▼
+   Llenar con el contenido de la sesión. Un módulo opcional se activa
+   por la presencia de sus datos; para desactivarlo, borrar la clave.
+   ===================================================================== */
+const SESSION = {
+  level:"B1.1", levelNote:"Month 1 · fluency foundation", accent:"a2",
+  sessionLabel:"SESSION 2 · MONTH 1",
+  title:"Grandma vs Technology: The Video Call From the Ceiling",
+  subtitle:"Every family has someone who can't quite handle a video call. Today you tell two family stories, chained together with and / then / but.",
+  meta:[["Function","Tell a complete family story with 5+ chained sentences"],["Grammar","Irregular verbs in the past simple"],["Angle","Vida · family life and technology"]],
+  bankTarget:"Target: 14 / 20 before the session ends.",
+  talkTarget:28,
+
+  warmup:{
+    minutes:5,
+    icebreaker:"Small talk: what's the weather like today? Let's talk about it for a minute before we start.",
+    carryIn:["task","deadline","admit"],
+    retrieval:[
+      "Last time you told me about looking busy at work — did anyone notice you this week?",
+      "Did you finish the task you mentioned last time?",
+      "Any new deadline this week?"
+    ]
+  },
+
+  vocab:{
+    minutes:10,
+    words:[
+      {w:"screen", d:"the flat part of a phone or computer that shows things.", c:"look at the screen"},
+      {w:"camera", d:"the part of a phone that takes photos or video.", c:"turn on the camera"},
+      {w:"volume", d:"how loud or quiet a sound is.", c:"turn up the volume"},
+      {w:"message", d:"a short piece of text or voice you send someone.", c:"leave a message"},
+      {w:"button", d:"a small part you press to make something happen.", c:"press the button"},
+      {w:"patience", d:"the ability to stay calm while waiting or explaining.", c:"lose your patience"},
+      {w:"help", d:"support you give someone to do something.", c:"need help"},
+      {w:"ceiling", d:"the surface above you inside a room.", c:"point at the ceiling"},
+      {w:"speaker", d:"the part of a device that makes sound.", c:"talk into the speaker"},
+      {w:"confusion", d:"the feeling of not understanding what is happening.", c:"cause confusion"}
+    ],
+    verbs:[
+      {w:"call", d:"to contact someone by phone or video.", c:"call your grandmother"},
+      {w:"answer", d:"to respond when the phone rings.", c:"answer the phone"},
+      {w:"hang up", d:"to end a phone or video call.", c:"hang up by accident"},
+      {w:"shout", d:"to speak in a loud, forceful voice.", c:"shout into the phone"},
+      {w:"explain", d:"to make something clear so someone understands.", c:"explain it again"},
+      {w:"press", d:"to push something with your finger.", c:"press the button"},
+      {w:"forget", d:"to not remember something.", c:"forget how it works"},
+      {w:"laugh", d:"to make a sound of happiness or amusement.", c:"laugh about it later"},
+      {w:"teach", d:"to help someone learn something new.", c:"teach a new skill"},
+      {w:"give up", d:"to stop trying to do something.", c:"give up too soon"}
+    ],
+    colloquial:[
+      {p:"You had to be there", m:"Used when a story is funny but hard to fully explain.", e:"It was so funny — you had to be there."},
+      {p:"Long story short", m:"Used to summarize a longer story quickly.", e:"Long story short, she called the neighbor by accident."},
+      {p:"I couldn't believe it", m:"Used to express surprise about something that happened.", e:"I couldn't believe it when she started shouting at the ceiling."}
+    ]
+  },
+
+  grammar:{
+    minutes:3,
+    title:"Irregular verbs in the past",
+    note:"Storytelling lives on irregular verbs. Use them naturally as you talk — don't stop mid-story to think about the rule.",
+    examples:["went","said","took","gave","forgot"]
+  },
+
+  speaking:{
+    minutes:26,
+    questions:[
+      {q:"Who is the least technological person in your family?", t:"observation", push:"What device confuses them the most — the phone, the remote, or something else?"},
+      {q:"Tell me the funniest thing that happened when you tried to help them.", t:"anecdote", push:"What did you do right after that happened? Keep going."},
+      {q:"What did you have to explain more than three times?", t:"anecdote", push:"Why do you think it didn't stick the first two times?"},
+      {q:"Is it patience or is it age?", t:"opinion", push:"Give me one example that proves your answer."},
+      {q:"Did technology make family closer or not?", t:"debate", push:"What would your family be like without video calls at all?"},
+      {q:"When you are 70, what technology are you going to hate?", t:"prediction", push:"Why that one specifically? What's already annoying about it?"}
+    ],
+    passes:[
+      {t:"Pass 1 — chain with and / then", s:"…and then…"},
+      {t:"Pass 2 — add but", s:"…but…"},
+      {t:"Pass 3 — use an irregular verb", s:"went / said / took / gave / forgot"}
+    ],
+    opine:[
+      {i:"L", n:"Lupita, 68", r:"Grandmother of three", q:"I don't understand why the phone shows my ceiling. I just want to see my grandchildren's faces.",
+       L:"Totally understandable", R:"She should just learn it"},
+      {i:"J", n:"Jorge, 34", r:"Part-time family tech support", q:"I've explained the volume button five times. After the fifth time, that's not confusion anymore — that's not trying.",
+       L:"He's being unfair", R:"He has a point"}
+    ],
+    builder:{
+      a:["My grandmother","My uncle","My dad","My aunt","The oldest person in my family"],
+      b:["couldn't find the volume button","pointed the camera at the ceiling","hung up by accident","shouted at the screen","forgot how the app worked"],
+      c:["during our first video call","every single time we called","for almost five minutes","right in the middle of the story","and then laughed about it"],
+      d:["and I had to explain it all again.","but we still laughed about it later.","so I just gave up and called instead.","and honestly, it was kind of sweet.","because technology confuses her completely."]
+    },
+    rank:{
+      question:"Rank These Tech Problems: Most Annoying to Least",
+      hint:"1 = most annoying · 6 = least annoying",
+      items:["Frozen screen","No sound at all","Wrong camera angle — just the ceiling","Call drops after two minutes","Opening the wrong app entirely","Grandma can't hear you at all"],
+      starters:["The most annoying one is… because…","The least annoying one is… because…"]
+    },
+    roleplay:{
+      title:"Teach Grandma (Gently)",
+      intro:"Each of you reveals only your own card. Teacher plays the frustrated grandchild first; then swap roles.",
+      a:{tag:"Role A · grandchild", name:"The Grandchild", who:"Trying to teach a video call app in two minutes",
+         goal:"Explain the app in under two minutes without getting annoyed. Use short, simple sentences.",
+         lines:["“Can you see me now?”","“Try pressing the button again.”","“It's okay, let's try one more time.”"]},
+      b:{tag:"Role B · grandma", name:"Grandma", who:"Wants to talk, not learn about buttons",
+         goal:"Ask at least three confused questions before you finally succeed. Don't make it easy.",
+         lines:["“Which button?”","“Why is it so small?”","“Can you just call me on the phone instead?”"]}
+    }
+  },
+
+  listening:{
+    minutes:8,
+    mode:"live",
+    src:"",
+    pace:"Read at a natural, unhurried pace (~110-120 wpm for A2.2). Pause one second at every slash. Read the whole exchange twice.",
+    script:"Voice 1: / Long story short, / my grandmother called me yesterday / and all I could see was the ceiling. / Voice 2: / The ceiling? / How does that even happen? / Voice 1: / She forgot the camera was on the front. / I told her, / “turn the phone around,” / and she pressed the volume button instead. / Voice 2: / I couldn't believe it when you told me that. / Voice 1: / It gets better. / She hung up by accident, / three times. / Voice 2: / You had to be there, right? / Voice 1: / Exactly. / By the fifth call, / I just laughed about it. / Voice 2: / Did you finally teach her? / Voice 1: / Sort of. / She still points the camera at the ceiling sometimes, / but now she presses the right button first.",
+    questions:[
+      {q:"What did Voice 1 see instead of her grandmother's face?", a:"The ceiling — her grandmother forgot the camera was pointing up."},
+      {q:"What did the grandmother do instead of turning the phone around?", a:"She pressed the volume button instead."},
+      {q:"How many times did the grandmother hang up by accident?", a:"Three times."}
+    ],
+    reaction:"Voice 1 says by the fifth call she “just laughed about it.” Do you think patience is the right response here, or should someone just do the call for her?"
+  },
+
+  checkup:{
+    minutes:6,
+    prompts:[
+      "Tell a complete story (5+ sentences) about the least technological person in your family, chaining sentences with and / then / but.",
+      "Use at least 4 irregular past verbs in your story (went, said, took, gave, forgot, or others).",
+      "Finish this sentence out loud: “When I am 70, the technology I'm going to hate is…”"
+    ]
+  },
+
+  takeOutside:{
+    minutes:2,
+    intro:"Pick at least 2 of these and ask a coworker, a friend, or someone at home this week. Come back next session with what they said.",
+    questions:[
+      "Who's the least technological person in your family?",
+      "What's the funniest thing that ever happened when you tried to teach someone technology?",
+      "Have you ever had a video call go wrong? What happened?",
+      "What technology do you think you'll hate when you're older?",
+      "Is patience or age the real problem when older people struggle with tech?"
+    ]
+  },
+
+  mechanics:["N1","N2","N3","N4","N5","N6","A4","B4","C6","D1"],
+  teacherGuardrails:[
+    "Grammar ceiling: past simple + irregular verbs only. No present perfect, no past continuous as a system — a little is fine if it slips in naturally, do not teach it.",
+    "Model the story yourself first (60 seconds) before asking the student to tell two.",
+    "This student is reserved — let the first story be the safe one (funniest); save the most frustrating one for once she's warmed up.",
+    "Talk time target 70/30 in favor of the student."
+  ]
+};
+/* =====================================================================
+   ▲▲▲  FIN DE LA ZONA EDITABLE — motor abajo  ▲▲▲
+   ===================================================================== */
+
+/* ---------- helpers ---------- */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+const mmss = s => String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+const el = (tag, cls, html)=>{const n=document.createElement(tag); if(cls)n.className=cls; if(html!=null)n.innerHTML=html; return n;};
+function shuffle(a){const c=a.slice(); for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [c[i],c[j]]=[c[j],c[i]];} return c;}
+function speak(t){ try{ if(!("speechSynthesis" in window))return; speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=.9; speechSynthesis.speak(u);}catch(e){} }
+const ICO = {
+  spk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>',
+  chk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>',
+  again:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+  gram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20l9-9-9-9-9 9 9 9z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>'
+};
+const ACCENTS = {a1:["#FFB020","#B8790A"], a2:["#D96A28","#A84A15"], b1:["#00C2A0","#00947A"], b2:["#6C5CE7","#4A3BC7"]};
+
+/* ---------- accent + hero ---------- */
+(function boot(){
+  const a = ACCENTS[SESSION.accent] || ACCENTS.b1;
+  document.documentElement.style.setProperty("--accent", a[0]);
+  document.documentElement.style.setProperty("--accent-dark", a[1]);
+  $("#lvlChip").innerHTML = "● LEVEL "+SESSION.level+(SESSION.levelNote?' <span style="opacity:.65;font-weight:700">'+SESSION.levelNote+'</span>':"");
+  $("#heroKicker").textContent = SESSION.sessionLabel || "";
+  $("#heroTitle").innerHTML = SESSION.title;
+  $("#heroSub").textContent = SESSION.subtitle || "";
+  $("#heroMeta").innerHTML = (SESSION.meta||[]).map(m=>'<div><b>'+m[0]+':</b> '+m[1]+'</div>').join("");
+  $("#bankTarget").textContent = SESSION.bankTarget || "";
+  $("#talkTarget").textContent = "/ "+mmss((SESSION.talkTarget||28)*60);
+  document.title = "Session — "+SESSION.level+" — GT English Training";
+})();
+
+/* ---------- section factory ---------- */
+let BLOCKS = 0;
+function section(opts){
+  const s = el("section", "sect"+(opts.big?" big":"")+(opts.dark?" dark":"")+(opts.teacher?" teacher-only":""));
+  s.dataset.block = opts.id;
+  const head = el("div","sect-head");
+  head.innerHTML =
+    '<div class="sect-ico" style="background:'+(opts.icoBg||"var(--paper-soft)")+'">'+opts.ico+'</div>'+
+    '<div><p class="kicker">'+opts.kicker+(opts.teacher?' <span class="t-flag">Teacher only</span>':'')+'</p>'+
+    '<h2 class="sect-title">'+opts.title+'</h2></div>'+
+    (opts.time?'<span class="time-tag'+(opts.core?" core":"")+'">'+opts.time+'</span>':'');
+  s.appendChild(head);
+  if(opts.desc) s.appendChild(el("p","sect-desc",opts.desc));
+  const body = el("div"); s.appendChild(body);
+  if(opts.done!==false){
+    const b = el("button","done-btn", ICO.chk+" <span>Mark this block done</span>");
+    b.addEventListener("click",()=>{
+      b.classList.toggle("on");
+      $("span",b).textContent = b.classList.contains("on") ? " Block completed" : " Mark this block done";
+      paintProgress();
+    });
+    s.appendChild(b); BLOCKS++;
+  }
+  $("#main").appendChild(s);
+  return body;
+}
+
+/* =====================================================================
+   N1 · WORD BANK
+   ===================================================================== */
+const ALLV = [...SESSION.vocab.words.map(o=>({...o,v:false})), ...SESSION.vocab.verbs.map(o=>({...o,v:true}))];
+(function(){
+  const g = $("#bankGrid");
+  ALLV.forEach(o=>{
+    const b = el("button","wchip"+(o.v?" v":""), o.w.replace(/\s*\(.*?\)/,""));
+    b.setAttribute("aria-pressed","false");
+    b.addEventListener("click",()=>{ b.classList.toggle("used");
+      b.setAttribute("aria-pressed", b.classList.contains("used")); paintBank(); });
+    g.appendChild(b);
+  });
+})();
+const usedWords = ()=> $$(".wchip.used").map(b=>b.textContent);
+function paintBank(){
+  const n = usedWords().length;
+  $("#bankCount").textContent = n+" / "+ALLV.length+" used";
+  $("#fWords").textContent = n+"/"+ALLV.length;
+}
+
+/* =====================================================================
+   2 · WARM-UP
+   ===================================================================== */
+(function(){
+  const w = SESSION.warmup; if(!w) return;
+  const b = section({id:"warmup", kicker:"Warm-Up · get the mouth moving", title:"Before We Start",
+    time:w.minutes+" min", core:true, icoBg:"color-mix(in srgb, var(--accent) 12%, transparent)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-dark)" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M5.6 5.6l2.1 2.1M3 12h3M18 12h3M16.3 7.7l2.1-2.1"/><circle cx="12" cy="14" r="5"/><path d="M10 21h4"/></svg>',
+    desc:"Two minutes of free talk, then three retrieval questions from last session. Do not correct anything here — the goal is fluency, not accuracy."});
+  const g = el("div","warm-grid");
+  g.appendChild(el("div","ice",'<span class="lbl">Ice-breaker</span><p>'+w.icebreaker+'</p>'));
+  const rc = el("div","ice",'<span class="lbl">Words from last session</span><p style="font-size:13.5px;font-weight:700;color:var(--ink-soft)">Tap each one as the student reuses it today.</p>');
+  const rw = el("div","recall");
+  (w.carryIn||[]).forEach(word=>{
+    const bt = el("button",null,word);
+    bt.addEventListener("click",()=>bt.classList.toggle("on"));
+    rw.appendChild(bt);
+  });
+  rc.appendChild(rw); g.appendChild(rc);
+  b.appendChild(g);
+  b.appendChild(el("h3","blk","Retrieval questions"));
+  b.appendChild(el("ol","qlist",(w.retrieval||[]).map(q=>"<li>"+q+"</li>").join("")));
+})();
+
+/* =====================================================================
+   3 · VOCABULARY
+   ===================================================================== */
+(function(){
+  const v = SESSION.vocab;
+  const b = section({id:"vocab", kicker:"Session vocabulary", title:"Words &amp; Verbs You Need Today",
+    time:v.minutes+" min", core:true, icoBg:"color-mix(in srgb, var(--accent) 12%, transparent)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+    desc:"10 words + 10 verbs specific to today's topic. Teacher: tick any card that needs a live explanation before the Speaking Core. Student: write your own sentence in “make it yours”."});
+  function card(o,isV){
+    const c = el("div","vcard "+(isV?"v":"n"));
+    c.innerHTML =
+      '<div class="vtop"><p class="vword">'+o.w+'</p><button class="spk" aria-label="Hear it">'+ICO.spk+'</button></div>'+
+      '<p class="vdef">'+o.d+'</p><span class="vcol">'+o.c+'</span>'+
+      '<label class="vchk"><input type="checkbox"> Needs explanation</label>'+
+      '<div class="mine"><label>Make it yours</label><input type="text" placeholder="Write your own sentence..."></div>';
+    $(".spk",c).addEventListener("click",()=>speak(o.w.replace(/\s*\(.*?\)/,"")+". "+o.c));
+    return c;
+  }
+  b.appendChild(el("div","vlabel",'<i class="lg-dot" style="background:var(--accent);width:10px;height:10px;border-radius:50%;display:inline-block"></i> 10 Words'));
+  const g1 = el("div","vgrid"); v.words.forEach(o=>g1.appendChild(card(o,false))); b.appendChild(g1);
+  b.appendChild(el("div","vlabel",'<i class="lg-dot" style="background:var(--amber);width:10px;height:10px;border-radius:50%;display:inline-block"></i> 10 Verbs'));
+  const g2 = el("div","vgrid"); v.verbs.forEach(o=>g2.appendChild(card(o,true))); b.appendChild(g2);
+
+  const dark = el("div","sect dark"); dark.style.margin="26px 0 0";
+  dark.innerHTML = '<h3 class="blk" style="margin:0 0 4px;color:#fff">Colloquial Phrases</h3>'+
+    '<p class="sect-desc" style="margin:6px 0 18px">Five expressions the student will actually hear in a real conversation about this topic.</p>';
+  const cg = el("div","cgrid");
+  v.colloquial.forEach(c=>{
+    const d = el("div","ccard",'<p class="cph">“'+c.p+'” <button class="spk" aria-label="Hear it">'+ICO.spk+'</button></p>'+
+      '<p class="cmn">'+c.m+'</p><p class="cex">'+c.e+'</p>');
+    $(".spk",d).addEventListener("click",()=>speak(c.e));
+    cg.appendChild(d);
+  });
+  dark.appendChild(cg); b.appendChild(dark);
+})();
+
+/* =====================================================================
+   4 · GRAMMAR QUICK HIT (teacher only)
+   ===================================================================== */
+(function(){
+  const g = SESSION.grammar; if(!g) return;
+  const b = section({id:"grammar", kicker:"Reference · not a lesson", title:"Grammar Quick Hit", teacher:true,
+    time:g.minutes+" min", icoBg:"rgba(255,90,95,.12)", done:false,
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round"><path d="M12 20l9-9-9-9-9 9 9 9z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>'});
+  b.appendChild(el("div","ghit", ICO.gram+'<div><h4>'+g.title+'</h4><p>'+g.note+'</p>'+
+    g.examples.map(e=>'<span class="gex">'+e+'</span>').join("")+'</div>'));
+})();
+
+/* =====================================================================
+   5 · SPEAKING CORE
+   ===================================================================== */
+const SP = SESSION.speaking;
+let matched = 0, PAIRS = SP.pairs||[];
+(function(){
+  const b = section({id:"speaking", kicker:"Speaking Core · this is the real class", title:"Where the Student Talks",
+    big:true, time:SP.minutes+" min · core", core:true, icoBg:"rgba(255,90,95,.12)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>',
+    desc:"The biggest block of the session. Start the ring and the student keeps talking until it closes. If an answer dies early, press Push. If it was good, run it again under a constraint."});
+
+  /* ---- 5a SORT (C5) ---- */
+  if(SP.sort){
+    const S = SP.sort;
+    b.appendChild(el("h3","blk", S.title+' <span style="font-size:10px;text-transform:uppercase;letter-spacing:1px;background:var(--coral);color:#fff;padding:4px 10px;border-radius:999px">Main dynamic</span>'));
+    b.appendChild(el("p","mini", S.instructions));
+    const status = el("div","sort-status",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><span></span>');
+    b.appendChild(status);
+    const pool = el("div","pool"); pool.setAttribute("aria-label","Task pool"); b.appendChild(pool);
+    const cols = el("div","cols");
+    S.columns.forEach((c,i)=>{
+      const colors=["var(--accent)","var(--coral)","var(--violet)"];
+      const dc = el("div","col");
+      dc.dataset.col=c.key; dc.style.borderTop="3px solid "+colors[i%3];
+      dc.innerHTML='<h5 style="color:'+colors[i%3]+'">'+c.label+' <span class="cnt">0</span></h5><ul></ul>';
+      cols.appendChild(dc);
+    });
+    b.appendChild(cols);
+    if(S.starters) b.appendChild(el("p","starters","Sentence starters: "+S.starters.map(s=>"<code>"+s+"</code>").join(" ")));
+    if(S.teacherPush){ const p = el("p","starters teacher-only",'<span class="t-flag">Push</span> '+S.teacherPush); b.appendChild(p); }
+
+    let armed=null;
+    const mkChip = (txt,i)=>{
+      const c = el("button","tchip",txt); c.dataset.i=i; c.draggable=true;
+      c.addEventListener("click",()=>{
+        if(armed===c){armed=null;c.classList.remove("sel");setArmed(false);return;}
+        $$(".tchip.sel",pool).forEach(x=>x.classList.remove("sel"));
+        armed=c; c.classList.add("sel"); setArmed(true);
+      });
+      c.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/plain",i);c.classList.add("drag");});
+      c.addEventListener("dragend",()=>c.classList.remove("drag"));
+      return c;
+    };
+    S.items.forEach((t,i)=>pool.appendChild(mkChip(t,i)));
+    const setArmed = on => $$(".col",cols).forEach(c=>c.classList.toggle("armed",on));
+    function place(chip,col){
+      const txt=chip.textContent, idx=chip.dataset.i;
+      const li = el("li",null,'<span>'+txt+'</span><button aria-label="Send back to the pool">&times;</button>');
+      $("button",li).addEventListener("click",ev=>{ ev.stopPropagation(); li.remove();
+        pool.appendChild(mkChip(txt,idx)); paint(); });
+      $("ul",col).appendChild(li); chip.remove(); armed=null; setArmed(false); paint();
+    }
+    $$(".col",cols).forEach(col=>{
+      col.addEventListener("dragover",e=>{e.preventDefault();col.classList.add("over");});
+      col.addEventListener("dragleave",()=>col.classList.remove("over"));
+      col.addEventListener("drop",e=>{e.preventDefault();col.classList.remove("over");
+        const chip = pool.querySelector('.tchip[data-i="'+e.dataTransfer.getData("text/plain")+'"]');
+        if(chip) place(chip,col);});
+      col.addEventListener("click",()=>{ if(armed) place(armed,col); });
+    });
+    function paint(){
+      let ok=true;
+      $$(".col",cols).forEach(col=>{
+        const n = $$("li",col).length;
+        $(".cnt",col).textContent=n;
+        const ul=$("ul",col); let e=$(".empty",col);
+        if(n===0&&!e){ ul.after(el("div","empty","Drop or tap a task in here")); }
+        else if(n>0&&e){ e.remove(); }
+        if(n < (S.minPerColumn||2)) ok=false;
+      });
+      status.classList.toggle("ok",ok);
+      $("span",status).innerHTML = ok
+        ? 'Balanced. Now ask: <b>“Why that column and not the next one?”</b>'
+        : 'Balance rule: at least <b>'+(S.minPerColumn||2)+' tasks in every column</b> before you move on.';
+    }
+    paint();
+  }
+
+  /* ---- 5b QUESTION ENGINE (N3 + N2 + A1 + A2) ---- */
+  b.appendChild(el("h3","blk","Questions from the Teacher"));
+  b.appendChild(el("p","mini","One at a time — the student never reads ahead."));
+  const qe = el("div","qengine");
+  qe.innerHTML =
+   '<div class="q-top"><span class="q-num" id="qNum"></span><span class="q-tag" id="qTag"></span>'+
+   '<div class="secs" id="secPick"><button data-s="45">45s</button><button data-s="60" class="on">60s</button><button data-s="90">90s</button></div></div>'+
+   '<p class="q-text" id="qText">—</p>'+
+   '<div class="ring-row"><div class="ring" id="ring"><svg width="74" height="74" viewBox="0 0 74 74">'+
+     '<circle class="bg" cx="37" cy="37" r="31" fill="none" stroke-width="7"/>'+
+     '<circle class="fg" id="ringFg" cx="37" cy="37" r="31" fill="none" stroke-width="7" stroke-dasharray="194.8" stroke-dashoffset="0"/>'+
+     '</svg><div class="num" id="ringNum">60</div></div>'+
+     '<button class="btn coral" id="ringBtn">'+ICO.play+' Start the clock — keep talking</button>'+
+     '<button class="btn ghost sm" id="pushBtn">Push it further</button></div>'+
+   '<div id="pushSlot"></div>'+
+   '<div class="again"><h5>'+ICO.again+' Say it again, better</h5>'+
+     '<p>Same answer, new constraint. Tap a card and the student repeats the answer respecting it.</p>'+
+     '<div class="pass-row" id="passRow"></div></div>'+
+   '<div class="q-nav"><button class="btn ghost sm" id="prevQ">← Previous</button>'+
+     '<button class="btn sm" id="nextQ">Next question →</button>'+
+     '<button class="btn ghost sm" id="randQ">Surprise me</button><div class="q-dots" id="qDots"></div></div>';
+  b.appendChild(qe);
+  $("#passRow",qe).innerHTML = (SP.passes||[]).map((p,i)=>'<button class="pass" data-p="'+i+'">'+p.t+'<small>'+p.s+'</small></button>').join("");
+
+  const QS = SP.questions, CIRC = 2*Math.PI*31;
+  let qi=0, secs=60, left=60, ringInt=null;
+  $("#ringFg").setAttribute("stroke-dasharray", CIRC.toFixed(1));
+  function resetRing(){
+    clearInterval(ringInt); ringInt=null; left=secs;
+    $("#ringNum").textContent=left; $("#ring").classList.remove("done");
+    $("#ringFg").style.strokeDashoffset="0";
+    $("#ringBtn").innerHTML = ICO.play+" Start the clock — keep talking";
+  }
+  function paintQ(){
+    const it=QS[qi];
+    $("#qNum").textContent="Question "+(qi+1)+" of "+QS.length;
+    $("#qTag").textContent=it.t; $("#qText").textContent=it.q;
+    $("#pushSlot").innerHTML=""; $$(".pass",qe).forEach(p=>p.classList.remove("on"));
+    resetRing();
+    $("#qDots").innerHTML = QS.map((_,k)=>'<i class="'+(k===qi?"on":(k<qi?"past":""))+'"></i>').join("");
+  }
+  $("#ringBtn").addEventListener("click",()=>{
+    if(ringInt){ resetRing(); return; }
+    $("#ringBtn").innerHTML = ICO.pause+" Stop / reset";
+    ringInt=setInterval(()=>{
+      left--; $("#ringNum").textContent=Math.max(left,0);
+      $("#ringFg").style.strokeDashoffset=(CIRC*(1-left/secs)).toFixed(1);
+      if(left<=0){ clearInterval(ringInt); ringInt=null; $("#ring").classList.add("done");
+        $("#ringNum").textContent="✓"; $("#ringBtn").innerHTML=ICO.again+" Run it again"; }
+    },1000);
+  });
+  $$("#secPick button",qe).forEach(bt=>bt.addEventListener("click",()=>{
+    $$("#secPick button",qe).forEach(x=>x.classList.remove("on")); bt.classList.add("on");
+    secs=parseInt(bt.dataset.s,10); resetRing();
+  }));
+  $("#pushBtn").addEventListener("click",()=>{
+    $("#pushSlot").innerHTML='<div class="push-box"><span class="lbl">Push it further</span>'+QS[qi].push+'</div>';
+  });
+  $$(".pass",qe).forEach(p=>p.addEventListener("click",()=>p.classList.toggle("on")));
+  $("#nextQ").addEventListener("click",()=>{qi=(qi+1)%QS.length;paintQ();});
+  $("#prevQ").addEventListener("click",()=>{qi=(qi-1+QS.length)%QS.length;paintQ();});
+  $("#randQ").addEventListener("click",()=>{let n;do{n=Math.floor(Math.random()*QS.length);}while(n===qi&&QS.length>1);qi=n;paintQ();});
+  paintQ();
+
+  /* ---- 5c REACT & OPINE (C1) ---- */
+  b.appendChild(el("h3","blk","React &amp; Opine"));
+  b.appendChild(el("p","mini","Do not ask “do you agree?”. Ask for an exact number on the slider — then ask the student to defend <em>that</em> number. The middle is where the long sentences live."));
+  const og = el("div","opine-grid");
+  const label = v => v<15?"Strongly disagree":v<35?"Disagree":v<46?"Slightly disagree":v<=54?"Right in the middle":v<66?"Slightly agree":v<86?"Agree":"Strongly agree";
+  window.__label = label;
+  SP.opine.forEach(o=>{
+    const c = el("div","ocard");
+    c.innerHTML =
+      '<div class="oc-top"><div class="oc-av">'+o.i+'</div><div><p class="oc-name">'+o.n+'</p><p class="oc-role">'+o.r+'</p></div></div>'+
+      '<p class="oc-quote">“'+o.q+'”</p>'+
+      '<div class="slider-box"><div class="sl-ends"><span>'+o.L+'</span><span>'+o.R+'</span></div>'+
+        '<input type="range" min="0" max="100" value="50" aria-label="How much do you agree with '+o.n+'">'+
+        '<div class="sl-read"><span class="sl-num">50</span><span class="sl-word">Right in the middle</span></div>'+
+        '<p class="sl-why">Why exactly this number and not 20 more?</p></div>'+
+      '<div class="oc-actions"><button class="btn ghost sm spkq">Hear it '+ICO.spk+'</button></div>';
+    const rng=$("input[type=range]",c);
+    rng.addEventListener("input",()=>{ $(".sl-num",c).textContent=rng.value; $(".sl-word",c).textContent=label(+rng.value); });
+    $(".spkq",c).addEventListener("click",()=>speak(o.q));
+    og.appendChild(c);
+  });
+  b.appendChild(og);
+
+  /* ---- 5d COLLOCATION MATCH (B1) ---- */
+  if(PAIRS.length){
+    b.appendChild(el("h3","blk","Collocation Sprint"));
+    b.appendChild(el("p","mini","Tap a verb, then its natural partner. Green means native speakers really say it. Every correct pair has to be used out loud in a full sentence."));
+    const wrap = el("div","coll-wrap",'<div class="coll-col"><h5>Verbs</h5><div id="collL"></div></div><div class="coll-col"><h5>Partners</h5><div id="collR"></div></div>');
+    b.appendChild(wrap);
+    const score = el("div","coll-score",'<span id="collScore"></span><button class="btn ghost sm" id="collReset">Reset</button>');
+    b.appendChild(score);
+    const built = el("div","built"); built.id="collBuilt"; b.appendChild(built);
+    function build(){
+      matched=0; built.innerHTML="";
+      let selV=null;
+      const L=$("#collL",wrap), R=$("#collR",wrap); L.innerHTML=""; R.innerHTML="";
+      PAIRS.forEach(p=>{
+        const bt=el("button","cbtn",p.v); bt.dataset.v=p.v;
+        bt.addEventListener("click",()=>{ if(bt.classList.contains("matched"))return;
+          $$(".cbtn",L).forEach(x=>x.classList.remove("sel")); bt.classList.add("sel"); selV=p.v; });
+        L.appendChild(bt);
+      });
+      shuffle(PAIRS).forEach(p=>{
+        const bt=el("button","cbtn",p.n); bt.dataset.n=p.n;
+        bt.addEventListener("click",()=>{
+          if(bt.classList.contains("matched")||!selV) return;
+          const ok = PAIRS.find(x=>x.v===selV).n===p.n;
+          const lb = $('.cbtn[data-v="'+selV+'"]',L);
+          if(ok){
+            bt.classList.add("matched"); bt.classList.remove("sel");
+            lb.classList.add("matched"); lb.classList.remove("sel");
+            matched++;
+            const phrase = selV+" "+p.n;
+            const sp = el("span",null,phrase+' <button class="spk" aria-label="Hear it">'+ICO.spk+'</button>');
+            $(".spk",sp).addEventListener("click",()=>speak(phrase));
+            built.appendChild(sp); speak(phrase); selV=null; paintColl();
+          } else { bt.classList.add("wrong"); setTimeout(()=>bt.classList.remove("wrong"),350); }
+        });
+        R.appendChild(bt);
+      });
+      paintColl();
+    }
+    window.paintColl = function(){
+      $("#collScore").textContent = matched+" / "+PAIRS.length+" pairs";
+      $("#fColl").textContent = matched+"/"+PAIRS.length;
+    };
+    $("#collReset",score).addEventListener("click",build);
+    build();
+  } else { $("#fCollWrap").remove(); }
+
+  /* ---- 5e SENTENCE BUILDER (B3) ---- */
+  if(SP.builder){
+    const B = SP.builder;
+    b.appendChild(el("h3","blk","Sentence Builder"));
+    b.appendChild(el("p","mini","Spin, read the sentence out loud, change one part, say it again. Five spins is five correct sentences with zero correction needed."));
+    const row = el("div","sb-row");
+    [["sbA","Who / what","a"],["sbB","Prediction","b"],["sbC","What exactly","c"],["sbD","Ending","d"]].forEach(([id,lb,k])=>{
+      const d = el("div",null,'<label for="'+id+'">'+lb+'</label><select id="'+id+'">'+B[k].map(v=>'<option>'+v+'</option>').join("")+'</select>');
+      row.appendChild(d);
+    });
+    b.appendChild(row);
+    const out = el("div","sb-out",'<p id="sbOut">—</p><button class="spk" id="sbSpk" aria-label="Hear this sentence">'+ICO.spk+'</button><button class="btn ghost sm" id="sbSpin">Spin again</button>');
+    b.appendChild(out);
+    const txt = ()=>["sbA","sbB","sbC","sbD"].map(i=>$("#"+i).value).join(" ");
+    const paint = ()=>$("#sbOut").textContent = txt();
+    ["sbA","sbB","sbC","sbD"].forEach(i=>$("#"+i).addEventListener("change",paint));
+    $("#sbSpk").addEventListener("click",()=>speak(txt()));
+    $("#sbSpin").addEventListener("click",()=>{
+      [["sbA","a"],["sbB","b"],["sbC","c"],["sbD","d"]].forEach(([i,k])=>{$("#"+i).selectedIndex=Math.floor(Math.random()*B[k].length);});
+      paint();
+    });
+    paint();
+  }
+
+  /* ---- 5f ROLEPLAY (D1 + D2) ---- */
+  if(SP.roleplay){
+    const R = SP.roleplay;
+    b.appendChild(el("h3","blk",R.title));
+    b.appendChild(el("p","mini",R.intro));
+
+    const rpBody = el("div"); b.appendChild(rpBody);
+    let roundNav = null;
+    if(R.rounds && R.rounds.length){
+      roundNav = el("div","q-nav",'<button class="btn ghost sm" id="rpPrev">← Previous round</button>'+
+        '<span class="q-num" id="rpNum"></span><button class="btn sm" id="rpNext">Next round →</button>');
+      b.appendChild(roundNav);
+    }
+
+    function paintRound(pair, roundLabel){
+      rpBody.innerHTML = "";
+      if(roundLabel) rpBody.appendChild(el("p","starters",'<code>'+roundLabel+'</code>'));
+      const g = el("div","rp-grid");
+      [pair.a,pair.b].forEach((r,k)=>{
+        const c = el("div","rp");
+        c.innerHTML =
+          '<div class="rp-img"'+(k?' style="background:linear-gradient(135deg,var(--coral-dark),var(--navy))"':'')+'>'+
+            (r.img?'<img src="'+r.img+'" alt="" onerror="this.remove()">':'')+'<span class="tag">'+r.tag+'</span></div>'+
+          '<div class="rp-body"><h4>'+r.name+'</h4><p class="who">'+r.who+'</p>'+
+          '<button class="btn ghost sm reveal">Reveal my objective</button>'+
+          '<div class="goal hidden"><span class="lbl">Your secret objective</span>'+r.goal+
+          '<ul class="rp-lines">'+r.lines.map(l=>"<li>"+l+"</li>").join("")+'</ul></div></div>';
+        const goal=$(".goal",c), btn=$(".reveal",c);
+        btn.addEventListener("click",()=>{ goal.classList.toggle("hidden");
+          btn.textContent = goal.classList.contains("hidden")?"Reveal my objective":"Hide my objective"; });
+        g.appendChild(c);
+      });
+      rpBody.appendChild(g);
+      if(pair.curves&&pair.curves.length){
+        const cv = el("div","curve",'<div style="flex:1 1 220px"><span class="lbl">Curveball</span>'+
+          '<p id="curveText">Press the button mid-conversation to drop a complication in.</p></div>'+
+          '<button class="btn coral sm curveBtn">'+ICO.bolt+' Drop a curveball</button>');
+        rpBody.appendChild(cv);
+        $(".curveBtn",cv).addEventListener("click",()=>{
+          $("#curveText",cv).textContent = pair.curves[Math.floor(Math.random()*pair.curves.length)];
+        });
+      }
+    }
+
+    if(R.rounds && R.rounds.length){
+      let ri = 0;
+      function paintRi(){
+        paintRound(R.rounds[ri], R.rounds[ri].label || ("Round "+(ri+1)+" of "+R.rounds.length));
+        $("#rpNum",roundNav).textContent = (ri+1)+" / "+R.rounds.length;
+      }
+      $("#rpPrev",roundNav).addEventListener("click",()=>{ ri=(ri-1+R.rounds.length)%R.rounds.length; paintRi(); });
+      $("#rpNext",roundNav).addEventListener("click",()=>{ ri=(ri+1)%R.rounds.length; paintRi(); });
+      paintRi();
+    } else {
+      paintRound({a:R.a, b:R.b, curves:R.curves});
+    }
+  }
+
+  /* ---- 5g RANKING (C6) ---- */
+  if(SP.rank){
+    const K = SP.rank;
+    b.appendChild(el("h3","blk",K.question));
+    b.appendChild(el("p","mini",K.hint+" — drag to reorder, or use the arrows. The order is never the point; the justification is."));
+    const ul = el("ul","rank-list");
+    function row(t){
+      const li = el("li",null,'<span>'+t+'</span><div class="rk-arrows">'+
+        '<button aria-label="Move up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg></button>'+
+        '<button aria-label="Move down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button></div>');
+      li.draggable=true;
+      const [up,dn]=$$(".rk-arrows button",li);
+      up.addEventListener("click",()=>{ if(li.previousElementSibling) ul.insertBefore(li,li.previousElementSibling); });
+      dn.addEventListener("click",()=>{ if(li.nextElementSibling) ul.insertBefore(li.nextElementSibling,li); });
+      li.addEventListener("dragstart",()=>li.classList.add("drag"));
+      li.addEventListener("dragend",()=>{li.classList.remove("drag"); $$("li",ul).forEach(x=>x.classList.remove("over"));});
+      li.addEventListener("dragover",e=>{
+        e.preventDefault(); const d=ul.querySelector("li.drag"); if(!d||d===li)return;
+        li.classList.add("over");
+        const r=li.getBoundingClientRect();
+        ul.insertBefore(d, (e.clientY-r.top)>r.height/2 ? li.nextElementSibling : li);
+      });
+      li.addEventListener("dragleave",()=>li.classList.remove("over"));
+      return li;
+    }
+    shuffle(K.items).forEach(t=>ul.appendChild(row(t)));
+    b.appendChild(ul);
+    if(K.starters) b.appendChild(el("p","starters","Then say it: "+K.starters.map(s=>"<code>"+s+"</code>").join(" ")));
+  }
+
+  /* ---- 5h WOULD YOU RATHER (C8) ---- */
+  if(SP.wyr){
+    const W = SP.wyr;
+    b.appendChild(el("h3","blk","Would you rather…"));
+    let nav = null, wi = 0, list = W.dilemmas && W.dilemmas.length ? W.dilemmas : [W];
+    if(W.dilemmas && W.dilemmas.length){
+      nav = el("div","q-nav",'<button class="btn ghost sm" id="wyrPrev">← Previous</button><span class="q-num" id="wyrNum"></span><button class="btn sm" id="wyrNext">Next dilemma →</button>');
+    }
+    const body = el("div"); b.appendChild(body);
+    if(nav) b.appendChild(nav);
+    function paintWyr(){
+      const D = list[wi];
+      body.innerHTML = '<div class="wyr"><button data-w="0"><span>Option A</span>'+D.a+'</button><button data-w="1"><span>Option B</span>'+D.b+'</button></div><div class="wyrFollow"></div>';
+      const g = $(".wyr",body), follow = $(".wyrFollow",body);
+      $$("button",g).forEach(bt=>bt.addEventListener("click",()=>{
+        $$("button",g).forEach(x=>x.classList.remove("on")); bt.classList.add("on");
+        follow.innerHTML='<div class="push-box" style="margin-top:14px"><span class="lbl">Follow-up</span>'+
+          (bt.dataset.w==="0"?D.followA:D.followB)+'</div>';
+      }));
+      if(nav) $("#wyrNum",nav).textContent = (wi+1)+" / "+list.length;
+    }
+    if(nav){
+      $("#wyrPrev",nav).addEventListener("click",()=>{ wi=(wi-1+list.length)%list.length; paintWyr(); });
+      $("#wyrNext",nav).addEventListener("click",()=>{ wi=(wi+1)%list.length; paintWyr(); });
+    }
+    paintWyr();
+  }
+
+  /* ---- 5i VOTE -> REVEAL (C3) ---- */
+  if(SP.vote){
+    const V = SP.vote;
+    b.appendChild(el("h3","blk",V.question));
+    b.appendChild(el("p","mini","Vote first — the reveal only appears after you commit."));
+    const g = el("div","wyr",'<button data-v="0"><span>Option A</span>'+V.a+'</button><button data-v="1"><span>Option B</span>'+V.b+'</button>');
+    b.appendChild(g);
+    const rv = el("div"); b.appendChild(rv);
+    $$("button",g).forEach(bt=>bt.addEventListener("click",()=>{
+      $$("button",g).forEach(x=>x.classList.remove("on")); bt.classList.add("on");
+      rv.innerHTML='<div class="push-box" style="margin-top:14px"><span class="lbl">Reveal</span>'+V.reveal+'</div>';
+    }));
+  }
+
+  /* ---- 5j SPECTRUM LINE (C2) ---- */
+  if(SP.spectrum){
+    const SPX = SP.spectrum;
+    b.appendChild(el("h3","blk",SPX.title));
+    b.appendChild(el("p","mini","Move the marker now. Move it again at the end of class — did the conversation change your mind?"));
+    const box = el("div","slider-box",'<div class="sl-ends"><span>'+SPX.left+'</span><span>'+SPX.right+'</span></div>'+
+      '<input type="range" min="0" max="100" value="50"><div class="sl-read"><span class="sl-num">50</span><span class="sl-word">Right in the middle</span></div>');
+    const rng=$("input[type=range]",box);
+    rng.addEventListener("input",()=>{ $(".sl-num",box).textContent=rng.value; $(".sl-word",box).textContent=window.__label(+rng.value); });
+    b.appendChild(box);
+  }
+
+  /* ---- 5k HIDDEN MISSION (A6) ---- */
+  if(SP.mission){
+    b.appendChild(el("div","push-box teacher-only",'<span class="lbl">Hidden mission · teacher only</span>'+SP.mission));
+  }
+
+  /* ---- 5l NO-SPANISH STREAK (A5) ---- */
+  if(SP.streak){
+    const st = el("div","sort-status ok",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg><span id="streakTxt">Streak: 0 sentences without Spanish</span><button class="btn coral sm" id="streakBtn" style="margin-left:auto">+1 sentence</button><button class="btn ghost sm" id="streakReset">Reset</button>');
+    b.appendChild(el("h3","blk",SP.streak));
+    b.appendChild(st);
+    let streak=0;
+    $("#streakBtn",st).addEventListener("click",()=>{streak++; $("#streakTxt",st).textContent="Streak: "+streak+" sentences without Spanish";});
+    $("#streakReset",st).addEventListener("click",()=>{streak=0; $("#streakTxt",st).textContent="Streak: 0 sentences without Spanish";});
+  }
+
+  /* ---- 5m REPLY OUT LOUD (D4 · Email/Message -> Speak) ---- */
+  if(SP.email){
+    const E = SP.email;
+    b.appendChild(el("h3","blk","Reply Out Loud"));
+    b.appendChild(el("p","mini","Read the message once, then answer by speaking for 45 seconds — do not type your reply."));
+    b.appendChild(el("div","goal",'<span class="lbl">'+(E.from||"Message")+'</span><p style="margin:6px 0 0;font-size:14px;font-weight:700">'+E.text+'</p>'));
+    const dt = el("button","btn coral sm","▶ Start 45s — reply out loud");
+    dt.addEventListener("click",()=>{
+      if(dt.dataset.on) return; dt.dataset.on="1"; let s=45; dt.textContent="00:45";
+      const iv=setInterval(()=>{ s--; dt.textContent="00:"+String(s).padStart(2,"0");
+        if(s<=0){clearInterval(iv); dt.textContent="✓ time — again?"; delete dt.dataset.on;} },1000);
+    });
+    b.appendChild(dt);
+  }
+
+  /* ---- 5o OPINION CARD DECK (C7) ---- */
+  if(SP.deck){
+    const D = SP.deck;
+    b.appendChild(el("h3","blk",D.title));
+    b.appendChild(el("p","mini",D.instructions));
+    const wrap = el("div","goal");
+    b.appendChild(wrap);
+    const nav = el("div","q-nav",'<button class="btn ghost sm" id="deckPrev">← Previous</button><span class="q-num" id="deckNum"></span><button class="btn sm" id="deckNext">Next card →</button>');
+    b.appendChild(nav);
+    let di=0;
+    function paintDeck(){
+      wrap.innerHTML = '<span class="lbl">Card '+(di+1)+' of '+D.cards.length+'</span><p style="margin:6px 0 0;font-size:15px;font-weight:800">'+D.cards[di]+'</p>';
+      $("#deckNum",nav).textContent = (di+1)+" / "+D.cards.length;
+    }
+    $("#deckPrev",nav).addEventListener("click",()=>{di=(di-1+D.cards.length)%D.cards.length; paintDeck();});
+    $("#deckNext",nav).addEventListener("click",()=>{di=(di+1)%D.cards.length; paintDeck();});
+    paintDeck();
+  }
+
+  /* ---- 5p SPEED OPINIONS (A3 · Question Roulette) ---- */
+  if(SP.speed){
+    const SPD = SP.speed;
+    b.appendChild(el("h3","blk",SPD.title||"Speed Opinions"));
+    b.appendChild(el("p","mini","One card, "+SPD.seconds+" seconds, two sentences. Press start, speak, and move on — no prep."));
+    const wrap = el("div","goal"); b.appendChild(wrap);
+    const timerRow = el("div","sort-status ok",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="spdClock">'+String(SPD.seconds).padStart(2,"0")+'s</span><button class="btn coral sm" id="spdStart" style="margin-left:auto">▶ Start</button>');
+    b.appendChild(timerRow);
+    const nav = el("div","q-nav",'<button class="btn ghost sm" id="spdPrev">← Previous</button><span class="q-num" id="spdNum"></span><button class="btn sm" id="spdNext">Next card →</button>');
+    b.appendChild(nav);
+    if(SPD.starters) b.appendChild(el("p","starters",SPD.starters.map(s=>"<code>"+s+"</code>").join(" ")));
+    let si=0, iv=null;
+    function paintSpeed(){
+      wrap.innerHTML = '<span class="lbl">Card '+(si+1)+' of '+SPD.cards.length+'</span><p style="margin:6px 0 0;font-size:15px;font-weight:800">'+SPD.cards[si]+'</p>';
+      $("#spdNum",nav).textContent = (si+1)+" / "+SPD.cards.length;
+      clearInterval(iv); $("#spdClock",timerRow).textContent = String(SPD.seconds).padStart(2,"0")+"s";
+      $("#spdStart",timerRow).textContent = "▶ Start";
+    }
+    $("#spdStart",timerRow).addEventListener("click",()=>{
+      let s = SPD.seconds; clearInterval(iv); $("#spdStart",timerRow).textContent="Timing…";
+      $("#spdClock",timerRow).textContent = String(s).padStart(2,"0")+"s";
+      iv = setInterval(()=>{ s--; $("#spdClock",timerRow).textContent = String(Math.max(s,0)).padStart(2,"0")+"s";
+        if(s<=0){ clearInterval(iv); $("#spdStart",timerRow).textContent="✓ time — next card"; } },1000);
+    });
+    $("#spdPrev",nav).addEventListener("click",()=>{ si=(si-1+SPD.cards.length)%SPD.cards.length; paintSpeed(); });
+    $("#spdNext",nav).addEventListener("click",()=>{ si=(si+1)%SPD.cards.length; paintSpeed(); });
+    paintSpeed();
+  }
+
+  /* ---- 5q MONTH BADGES (G6 · pacing/gamification) ---- */
+  if(SP.badges){
+    b.appendChild(el("h3","blk",SP.badges.title||"Month 1 Badges"));
+    b.appendChild(el("p","mini","Tap a badge when you and your teacher agree you earned it today."));
+    const wrap = el("div","badge-row");
+    wrap.style.cssText = "display:flex;flex-wrap:wrap;gap:10px";
+    SP.badges.items.forEach(label=>{
+      const chip = el("button","btn ghost sm badge-chip", "☐ "+label);
+      chip.addEventListener("click",()=>{
+        const on = chip.classList.toggle("on");
+        chip.textContent = (on?"✓ ":"☐ ")+label;
+      });
+      wrap.appendChild(chip);
+    });
+    b.appendChild(wrap);
+  }
+
+  /* ---- 5n VOICEMAIL CHALLENGE (D5) ---- */
+  if(SP.voicemail){
+    const VM = SP.voicemail;
+    b.appendChild(el("h3","blk","Voicemail Challenge"));
+    b.appendChild(el("p","mini","Teacher reads the voicemail once, out loud, at natural speed. Then the student has 45 seconds to respond as if calling back."));
+    b.appendChild(el("div","goal teacher-only",'<span class="lbl">Voicemail script · teacher reads aloud</span><p style="margin:6px 0 0;font-size:14px;font-weight:700">'+VM.script+'</p>'));
+    const dt = el("button","btn coral sm","▶ Start 45s — call them back");
+    dt.addEventListener("click",()=>{
+      if(dt.dataset.on) return; dt.dataset.on="1"; let s=45; dt.textContent="00:45";
+      const iv=setInterval(()=>{ s--; dt.textContent="00:"+String(s).padStart(2,"0");
+        if(s<=0){clearInterval(iv); dt.textContent="✓ time — again?"; delete dt.dataset.on;} },1000);
+    });
+    b.appendChild(dt);
+  }
+})();
+
+/* =====================================================================
+   6 · LISTENING
+   ===================================================================== */
+(function(){
+  const L = SESSION.listening;
+  if(!L || L.mode==="none") return;
+  const b = section({id:"listening", kicker:"Listening · then react", title:"Listen and Respond",
+    time:L.minutes+" min", core:true, icoBg:"color-mix(in srgb, var(--accent) 12%, transparent)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-dark)" stroke-width="2" stroke-linecap="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M3 14a2 2 0 0 1 2-2h1v6H5a2 2 0 0 1-2-2z"/><path d="M21 14a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2z"/><path d="M18 18v1a3 3 0 0 1-3 3h-2"/></svg>',
+    desc:"Listen twice before answering. The script stays hidden until the questions are done."});
+
+  if(L.mode==="audio" && L.src){
+    const p = el("div","lis-player",'<audio controls preload="none" src="'+L.src+'"></audio>'+
+      '<div class="secs"><button data-r="0.75">0.75x</button><button data-r="1" class="on">1x</button></div>');
+    b.appendChild(p);
+    const au = $("audio",p);
+    $$(".secs button",p).forEach(bt=>bt.addEventListener("click",()=>{
+      $$(".secs button",p).forEach(x=>x.classList.remove("on")); bt.classList.add("on");
+      au.playbackRate = parseFloat(bt.dataset.r);
+    }));
+  } else {
+    const live = el("div","lis-live teacher-only",
+      '<span class="lbl">Read this aloud · teacher only</span><p>'+L.script+'</p>'+
+      '<p class="pace">'+L.pace+'</p>');
+    b.appendChild(live);
+    const note = el("div","lis-live",'<span class="lbl">How this works</span><p style="margin:0">Your teacher is going to read a short story twice. Close your eyes the first time. Take notes the second time. Then answer the questions below.</p>');
+    b.appendChild(note);
+  }
+
+  b.appendChild(el("h3","blk","Comprehension"));
+  L.questions.forEach((q,i)=>{
+    const a = el("div","acc",'<button><span>'+(i+1)+'. '+q.q+'</span><span class="chev">▾</span></button>'+
+      '<div class="body hidden">'+q.a+'</div>');
+    $("button",a).addEventListener("click",()=>{
+      a.classList.toggle("open"); $(".body",a).classList.toggle("hidden");
+    });
+    b.appendChild(a);
+  });
+  if(L.reaction) b.appendChild(el("div","push-box",'<span class="lbl">React</span>'+L.reaction));
+  if(L.mode!=="audio"){
+    const t = el("p","starters teacher-only",'<span class="t-flag">Note</span> If the student misses a question, read only that sentence again — do not give the answer.');
+    b.appendChild(t);
+  }
+})();
+
+/* =====================================================================
+   7 · QUICK CHECKUP + CARRY-FORWARD (F6)
+   ===================================================================== */
+(function(){
+  const C = SESSION.checkup; if(!C) return;
+  const b = section({id:"checkup", kicker:"Close the session", title:"Quick Checkup",
+    time:C.minutes+" min", core:true, icoBg:"rgba(18,161,80,.12)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--green-ok)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+    desc:"Not a test. Three sentences out loud, then pick the three words that come back next session."});
+  const g = el("div","cu-grid");
+  C.prompts.forEach((p,i)=>{
+    g.appendChild(el("div","cu",'<span class="lbl">Produce it '+(i+1)+'</span><p>'+p+'</p>'+
+      '<input type="text" placeholder="Write it after you say it...">'));
+  });
+  b.appendChild(g);
+  b.appendChild(el("h3","blk","Carry-forward to the next Warm-Up"));
+  b.appendChild(el("p","mini","Pick exactly three words from today. They come back as retrieval questions next session."));
+  const cw = el("div","carry");
+  ALLV.forEach(o=>{
+    const w = o.w.replace(/\s*\(.*?\)/,"");
+    const bt = el("button",null,w);
+    bt.addEventListener("click",()=>{
+      const on = $$("button.on",cw).length;
+      if(!bt.classList.contains("on") && on>=3) return;
+      bt.classList.toggle("on");
+    });
+    cw.appendChild(bt);
+  });
+  b.appendChild(cw);
+})();
+
+/* =====================================================================
+   7b · TAKE IT OUTSIDE (real-world transfer — asks OTHER people, not the teacher)
+   ===================================================================== */
+(function(){
+  const T = SESSION.takeOutside; if(!T) return;
+  const b = section({id:"outside", kicker:"Take it outside the classroom", title:"Ask Someone Else This Week",
+    time:T.minutes+" min", core:true, icoBg:"color-mix(in srgb, var(--accent) 12%, transparent)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    desc:T.intro||"Pick at least 2 of these and ask a real person this week — a coworker, a client, someone at home. Bring back what they said."});
+  const g = el("div","oq-grid");
+  g.style.cssText = "display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))";
+  T.questions.forEach((q,i)=>{
+    const card = el("div","goal",'<span class="lbl">Question '+(i+1)+'</span><p style="margin:6px 0 10px;font-size:14.5px;font-weight:700">'+q+'</p>'+
+      '<button class="btn ghost sm askedBtn">☐ I asked this</button>');
+    const bt = $(".askedBtn",card);
+    bt.addEventListener("click",()=>{
+      const on = bt.classList.toggle("on");
+      bt.textContent = on ? "✓ I asked this" : "☐ I asked this";
+    });
+    g.appendChild(card);
+  });
+  b.appendChild(g);
+})();
+
+/* =====================================================================
+   N5 · EVIDENCE LOG (teacher only)
+   ===================================================================== */
+(function(){
+  const b = section({id:"log", kicker:"Live capture", title:"You Said → Better Version",
+    teacher:true, dark:true, time:"during class", done:false, icoBg:"rgba(255,255,255,.1)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--gt-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>',
+    desc:"Capture reformulations as they happen. Export at the end: the student leaves with proof of the session and you keep the record for the progress report."});
+  b.appendChild(el("div","log-grid",'<div class="l1"><label>You said</label></div><div class="l2"><label>Better version</label></div>'));
+  const rows = el("div"); b.appendChild(rows);
+  function addRow(){
+    const d = el("div","lrow",'<input class="said" placeholder="e.g. the machine will to check…">'+
+      '<input class="fix" placeholder="e.g. the machine will check…"><button class="del" aria-label="Remove row">&times;</button>');
+    $(".del",d).addEventListener("click",()=>d.remove());
+    rows.appendChild(d);
+  }
+  addRow(); addRow(); addRow();
+  const add = el("button","btn ghost sm","+ Add a reformulation");
+  add.addEventListener("click",addRow); b.appendChild(add);
+
+  const TAGS = ["Grammar slip","Pronunciation","Great vocabulary use","Used Spanish","Long fluent turn"];
+  const qt = el("div","qtags", TAGS.map(t=>'<button data-tag="'+t+'">'+t+'</button>').join(""));
+  b.appendChild(qt);
+  const st = el("ul","stamps"); b.appendChild(st);
+  window.__stamps = [];
+  $$("button",qt).forEach(bt=>bt.addEventListener("click",()=>{
+    const s={t:mmss(talk),tag:bt.dataset.tag}; window.__stamps.push(s);
+    st.prepend(el("li",null,"<b>"+s.t+"</b> <span>"+s.tag+"</span>"));
+  }));
+
+  if(SESSION.teacherGuardrails&&SESSION.teacherGuardrails.length){
+    b.appendChild(el("div","guard",'<h5>Level guardrails · '+SESSION.level+'</h5><ul>'+
+      SESSION.teacherGuardrails.map(g=>"<li>"+g+"</li>").join("")+'</ul>'));
+  }
+
+  const acts = el("div","log-actions",
+    '<button class="btn green" id="exportBtn">Export session evidence (.txt)</button>'+
+    '<button class="btn ghost" id="copyBtn">Copy to clipboard</button>'+
+    '<button class="btn ghost" id="printBtn">Print</button>');
+  b.appendChild(acts);
+  $("#printBtn",acts).addEventListener("click",()=>window.print());
+  $("#exportBtn",acts).addEventListener("click",()=>{
+    const blob = new Blob([buildReport()],{type:"text/plain;charset=utf-8"});
+    const a = document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="GT_"+SESSION.level.replace(/\./g,"")+"_SessionEvidence.txt";
+    a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  });
+  $("#copyBtn",acts).addEventListener("click",async ()=>{
+    const t=buildReport();
+    try{ await navigator.clipboard.writeText(t); }
+    catch(e){ const ta=el("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+    $("#copyBtn",acts).textContent="Copied ✓";
+    setTimeout(()=>$("#copyBtn",acts).textContent="Copy to clipboard",1800);
+  });
+})();
+
+/* =====================================================================
+   N5 · TALK TIME + PROGRESS + REPORT
+   ===================================================================== */
+let talk=0, talkOn=false, talkInt=null;
+$("#talkBtn").addEventListener("click",()=>{
+  talkOn=!talkOn;
+  $("#talkBtn").classList.toggle("on",talkOn);
+  $("#talkIco").outerHTML = talkOn
+    ? '<svg id="talkIco" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>'
+    : '<svg id="talkIco" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+  if(talkOn) talkInt=setInterval(()=>{talk++; $("#talkVal").textContent=mmss(talk); $("#fTalk").textContent=mmss(talk);},1000);
+  else clearInterval(talkInt);
+});
+$("#studentMode").addEventListener("change",e=>document.body.classList.toggle("student",e.target.checked));
+$("#presentMode").addEventListener("change",e=>{
+  document.body.classList.toggle("present",e.target.checked);
+  document.body.classList.toggle("flat",e.target.checked);
+});
+function paintProgress(){
+  const n = $$(".done-btn.on").length;
+  $("#progFill").style.width = (BLOCKS? n/BLOCKS*100 : 0)+"%";
+  $("#fBlocks").textContent = n+"/"+BLOCKS;
+}
+function buildReport(){
+  const words = usedWords();
+  const target = (SESSION.talkTarget||28)*60;
+  const cols = {};
+  $$(".col").forEach(c=>{ cols[$("h5",c).textContent.replace(/\s*\d+\s*$/,"").trim()] = $$("li span",c).map(s=>s.textContent); });
+  const sliders = $$(".ocard").map((c,i)=>{
+    const v = $("input[type=range]",c).value;
+    return SESSION.speaking.opine[i].n+": "+v+"/100 ("+window.__label(+v)+")";
+  });
+  const rank = $$("#main .rank-list li span").map((s,i)=>(i+1)+". "+s.textContent);
+  const refs = $$(".lrow").map(r=>({s:$(".said",r).value.trim(), f:$(".fix",r).value.trim()})).filter(o=>o.s||o.f);
+  const mine = $$(".mine input").map((i,k)=>({w:ALLV[k]?ALLV[k].w:"", s:i.value.trim()})).filter(o=>o.s);
+  const carry = $$(".carry button.on").map(b=>b.textContent);
+  const checkup = $$(".cu input").map(i=>i.value.trim()).filter(Boolean);
+  const o=[];
+  o.push("GT ENGLISH TRAINING — SESSION EVIDENCE");
+  o.push(SESSION.level+" · "+(SESSION.sessionLabel||"")+" · "+SESSION.title.replace(/<[^>]+>/g,""));
+  o.push("=".repeat(60)); o.push("");
+  o.push("STUDENT TALK TIME: "+mmss(talk)+"  (target "+mmss(target)+" — "+Math.round(talk/target*100)+"%)");
+  o.push("VOCABULARY PRODUCED: "+words.length+" / "+ALLV.length);
+  if(words.length) o.push("  "+words.join(", "));
+  if(PAIRS.length) o.push("COLLOCATIONS MATCHED: "+matched+" / "+PAIRS.length);
+  o.push("BLOCKS COMPLETED: "+$$(".done-btn.on").length+" / "+BLOCKS);
+  o.push("MECHANICS USED: "+(SESSION.mechanics||[]).join(", "));
+  o.push("");
+  if(Object.keys(cols).length){ o.push("-- SORTING --"); Object.keys(cols).forEach(k=>o.push("  "+k+": "+(cols[k].length?cols[k].join(" | "):"—"))); o.push(""); }
+  if(sliders.length){ o.push("-- OPINION POSITIONS (0-100) --"); sliders.forEach(s=>o.push("  "+s)); o.push(""); }
+  if(rank.length){ o.push("-- RANKING --"); rank.forEach(r=>o.push("  "+r)); o.push(""); }
+  if(mine.length){ o.push("-- STUDENT'S OWN SENTENCES --"); mine.forEach(m=>o.push('  ['+m.w+'] "'+m.s+'"')); o.push(""); }
+  if(checkup.length){ o.push("-- CHECKUP PRODUCTION --"); checkup.forEach(c=>o.push('  "'+c+'"')); o.push(""); }
+  o.push("-- YOU SAID  →  BETTER VERSION --");
+  refs.length ? refs.forEach(r=>o.push('  "'+r.s+'"  →  "'+r.f+'"')) : o.push("  (none captured)");
+  o.push("");
+  o.push("-- LIVE NOTES --");
+  (window.__stamps||[]).length ? window.__stamps.forEach(s=>o.push("  ["+s.t+"] "+s.tag)) : o.push("  (none)");
+  o.push("");
+  o.push("CARRY-FORWARD TO NEXT WARM-UP: "+(carry.length?carry.join(", "):"(not selected)"));
+  return o.join("\n");
+}
+paintProgress(); paintBank();
+</script>
+</body>
+</html>
