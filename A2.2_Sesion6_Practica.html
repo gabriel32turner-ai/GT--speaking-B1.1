@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GT Practice Session</title>
+<!--
+  ============================================================================
+  GT PRACTICE BOILERPLATE v1 · Gabriel Turner English Training
+  ----------------------------------------------------------------------------
+  Sesión de Práctica autodidacta (20-30 min). Se edita ÚNICAMENTE el objeto
+  PRACTICE al inicio del <script>. Mobile-first.
+  REGLA DURA: ninguna respuesta visible por default. Todo bajo acordeón.
+  Vocabulario y gramática SIEMPRE los mismos de la Sesión Principal.
+  Audio: si clip.src está vacío se activa una voz provisional del navegador
+  y se avisa en pantalla. Al llegar el MP3 se pega en src como data URI
+  base64 y el aviso desaparece solo.
+  Contenido de ejemplo: B1.1 · Sesión 7 · "Is AI Going to Take My Job?"
+  ============================================================================
+-->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gt-green-deep:#0E5C43; --gt-green:#12B886; --gt-copper:#D96A28;
+    --paper:#F7F4EC; --paper-soft:#EFEADD; --line:#DCD5C4;
+    --ink:#15181F; --ink-soft:#4A4E5A; --navy:#0B0F17; --white:#fff;
+    --green-ok:#12A150; --red-no:#D93025;
+    --accent:#00C2A0; --accent-dark:#00947A;
+    --coral:#FF5A5F; --coral-dark:#B7311B; --amber:#FFB020; --amber-dark:#B8790A;
+    --violet:#6C5CE7; --violet-soft:#F3F0FF;
+    --radius-block:22px; --radius-card:16px; --radius-pill:999px;
+    --shadow:0 8px 24px rgba(11,15,23,.07); --shadow-lg:0 16px 40px rgba(11,15,23,.13);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; font-family:'Manrope',system-ui,sans-serif; background:var(--paper); color:var(--ink);
+    line-height:1.55; -webkit-font-smoothing:antialiased; padding-bottom:76px; font-size:15px;}
+  img{max-width:100%; display:block;}
+  button{font-family:inherit;}
+  .wrap{max-width:720px; margin:0 auto; padding:0 16px;}
+  .hidden{display:none !important;}
+  h2 svg,h3 svg,h4 svg,h5 svg{width:17px; height:17px; flex-shrink:0;}
+
+  /* ===== TOP BAR ===== */
+  .top{position:sticky; top:0; z-index:50; background:rgba(11,15,23,.97); color:#fff;
+    backdrop-filter:blur(10px);}
+  .top-in{max-width:720px; margin:0 auto; padding:10px 16px; display:flex; align-items:center; gap:10px;}
+  .mark{width:26px; height:26px; border-radius:8px; flex-shrink:0; color:var(--navy); font-size:10.5px;
+    background:linear-gradient(135deg,var(--gt-green),var(--accent));
+    display:flex; align-items:center; justify-content:center; font-weight:800;}
+  .top b{font-size:11.5px; letter-spacing:.5px; font-weight:800;}
+  .lvl{margin-left:auto; font-size:11px; font-weight:800; padding:4px 10px; border-radius:var(--radius-pill);
+    background:color-mix(in srgb, var(--accent) 18%, transparent); color:var(--accent);
+    border:1px solid color-mix(in srgb, var(--accent) 45%, transparent); white-space:nowrap;}
+  .rail{height:4px; background:rgba(255,255,255,.12);}
+  .fill{height:100%; width:0%; background:linear-gradient(90deg,var(--gt-green),var(--accent)); transition:width .35s ease;}
+
+  /* ===== HERO ===== */
+  .hero{background:radial-gradient(circle at 15% 10%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 50%),
+      linear-gradient(140deg,var(--gt-green-deep),#10151F 70%,var(--navy));
+    color:#fff; padding:30px 0 34px;}
+  .hero .kick{font-size:10px; text-transform:uppercase; letter-spacing:1.4px; font-weight:800;
+    color:rgba(255,255,255,.6); margin:0 0 8px;}
+  .hero h1{margin:0 0 10px; font-size:clamp(24px,7vw,34px); font-weight:800; letter-spacing:-.6px; line-height:1.15;}
+  .hero h1 em{color:var(--accent); font-style:normal;}
+  .hero p{margin:0; font-size:14.5px; color:rgba(255,255,255,.75);}
+  .hero .how{margin-top:18px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.18);
+    border-radius:14px; padding:14px 16px; font-size:13.5px; color:rgba(255,255,255,.85);}
+  .hero .how b{color:#fff;}
+
+  /* ===== SECTION ===== */
+  .sect{background:#fff; border:1px solid var(--line); border-radius:var(--radius-block);
+    padding:22px 18px; margin:18px 0; box-shadow:var(--shadow);}
+  .sect.big{border:2px solid #FFDCC9; background:linear-gradient(180deg,#FFF9F5,#fff);}
+  .sect.dark{background:linear-gradient(140deg,#12161F,#1B1030); color:#fff; border:none;}
+  .s-head{display:flex; align-items:flex-start; gap:12px; margin-bottom:6px;}
+  .s-ico{width:38px; height:38px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .s-ico svg{width:19px; height:19px;}
+  .s-num{font-size:10px; text-transform:uppercase; letter-spacing:1.2px; font-weight:800; color:var(--ink-soft); margin:1px 0 2px;}
+  .s-title{font-size:clamp(19px,5vw,24px); font-weight:800; margin:0; letter-spacing:-.3px;}
+  .s-time{margin-left:auto; font-size:10.5px; font-weight:800; background:var(--paper-soft);
+    border:1px solid var(--line); color:var(--ink-soft); padding:4px 9px; border-radius:var(--radius-pill); white-space:nowrap;}
+  .sect.dark .s-time{background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.2); color:rgba(255,255,255,.75);}
+  .s-desc{color:var(--ink-soft); font-size:14px; margin:10px 0 18px;}
+  .sect.dark .s-desc{color:rgba(255,255,255,.65);}
+
+  /* ===== FLASHCARDS ===== */
+  .fc-bar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px;
+    font-size:12.5px; font-weight:800; color:var(--ink-soft);}
+  .fc-bar .pill{background:color-mix(in srgb, var(--accent) 12%, transparent); color:var(--accent-dark);
+    border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    padding:4px 11px; border-radius:var(--radius-pill); font-variant-numeric:tabular-nums;}
+  .fc-tabs{display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap;}
+  .fc-tabs button{background:#fff; border:1.5px solid var(--line); color:var(--ink-soft); cursor:pointer;
+    padding:7px 13px; border-radius:var(--radius-pill); font-size:12.5px; font-weight:800;}
+  .fc-tabs button.on{background:var(--navy); border-color:var(--navy); color:#fff;}
+  .fc-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:11px;}
+  .fc{background:var(--paper-soft); border:1.5px solid var(--line); border-radius:var(--radius-card);
+    padding:16px 14px; cursor:pointer; text-align:left; min-height:118px; display:flex; flex-direction:column;
+    transition:all .18s ease; position:relative;}
+  .fc:hover{border-color:var(--accent-dark); transform:translateY(-2px);}
+  .fc .tap{font-size:9.5px; text-transform:uppercase; letter-spacing:.9px; font-weight:800; color:#B3AC98;}
+  .fc .w{font-size:16px; font-weight:800; margin:6px 0 0; line-height:1.25;}
+  .fc .back{display:none; margin-top:8px;}
+  .fc.open{background:#fff; border-color:var(--accent);}
+  .fc.open .back{display:block;}
+  .fc.open .tap{color:var(--accent-dark);}
+  .fc .d{font-size:12.5px; color:var(--ink-soft); margin:0 0 6px;}
+  .fc .e{font-size:12px; font-style:italic; color:var(--accent-dark); margin:0;}
+  .fc .snd{position:absolute; top:12px; right:12px; background:none; border:none; cursor:pointer;
+    color:#B3AC98; padding:0;}
+  .fc .snd svg{width:15px; height:15px;}
+  .fc .snd:hover{color:var(--accent-dark);}
+  .fc.ph{border-style:dashed;}
+
+  /* ===== LISTENING ===== */
+  .clip{background:var(--paper-soft); border:1.5px solid var(--line); border-radius:var(--radius-card);
+    padding:16px; margin-bottom:14px;}
+  .clip h4{margin:0 0 4px; font-size:14.5px; font-weight:800; display:flex; align-items:center; gap:8px;}
+  .clip .who{font-size:12.5px; color:var(--ink-soft); margin:0 0 12px;}
+  .clip audio{width:100%; margin-bottom:10px;}
+  .rate{display:flex; gap:6px; margin-bottom:12px;}
+  .rate button{background:#fff; border:1.5px solid var(--line); color:var(--ink-soft); cursor:pointer;
+    padding:6px 12px; border-radius:var(--radius-pill); font-size:11.5px; font-weight:800;}
+  .rate button.on{background:var(--accent-dark); border-color:var(--accent-dark); color:#fff;}
+  .tts-note{background:#FFF3E9; border:1px solid #FFDCC9; color:var(--coral-dark); font-size:11.5px;
+    font-weight:700; border-radius:10px; padding:8px 11px; margin-bottom:10px;}
+  .acc{border:1px solid var(--line); border-radius:12px; margin-bottom:8px; overflow:hidden; background:#fff;}
+  .acc > button{width:100%; text-align:left; background:#fff; border:none; cursor:pointer;
+    padding:12px 14px; font-size:13.5px; font-weight:800; color:var(--ink);
+    display:flex; align-items:center; gap:10px; line-height:1.4;}
+  .acc > button:hover{background:var(--paper);}
+  .acc > button .chev{margin-left:auto; transition:transform .2s ease; font-size:11px; color:#B3AC98; flex-shrink:0;}
+  .acc.open > button .chev{transform:rotate(180deg);}
+  .acc .body{padding:0 14px 13px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;}
+  .acc.script > button{color:var(--accent-dark);}
+
+  /* ===== GRAMMAR ===== */
+  .gx{background:#fff; border:1.5px solid var(--line); border-radius:var(--radius-card);
+    padding:16px; margin-bottom:12px;}
+  .gx .q{font-size:14.5px; font-weight:700; margin:0 0 12px; line-height:1.5;}
+  .gx .q b{background:var(--paper-soft); border-bottom:2px solid var(--accent); padding:1px 10px; font-weight:800;}
+  .opts{display:flex; gap:8px; flex-wrap:wrap;}
+  .opts button{background:var(--paper); border:1.5px solid var(--line); color:var(--ink); cursor:pointer;
+    padding:9px 15px; border-radius:var(--radius-pill); font-size:13.5px; font-weight:800; transition:all .16s ease;}
+  .opts button:hover{border-color:var(--accent-dark);}
+  .opts button.ok{background:rgba(18,161,80,.12); border-color:var(--green-ok); color:var(--green-ok);}
+  .opts button.no{background:rgba(217,48,37,.1); border-color:var(--red-no); color:var(--red-no);}
+  .opts button.dim{opacity:.45;}
+  .fb{margin-top:12px; font-size:13px; border-radius:10px; padding:10px 13px; font-weight:700;}
+  .fb.ok{background:rgba(18,161,80,.1); color:var(--green-ok); border:1px solid #A9DFC0;}
+  .fb.no{background:rgba(217,48,37,.08); color:var(--red-no); border:1px solid #F3B9B4;}
+  .g-score{display:flex; align-items:center; gap:10px; font-size:13px; font-weight:800; color:var(--ink-soft); flex-wrap:wrap;}
+
+  /* ===== SPEAKING (bloque mayor) ===== */
+  .sp-steps{display:flex; flex-direction:column; gap:9px; margin-bottom:20px;}
+  .sp-step{display:flex; gap:12px; align-items:flex-start; background:#fff; border:1px solid #FFDCC9;
+    border-radius:12px; padding:12px 14px; font-size:13.5px; font-weight:700;}
+  .sp-step i{width:24px; height:24px; border-radius:50%; background:var(--coral); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800;
+    flex-shrink:0; font-style:normal;}
+  .qcard{background:#fff; border:1.5px solid #FFDCC9; border-radius:var(--radius-card);
+    padding:16px; margin-bottom:12px;}
+  .qcard .qt{font-size:16px; font-weight:800; margin:0 0 12px; line-height:1.4;}
+  .qtools{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+  .btn{display:inline-flex; align-items:center; gap:7px; cursor:pointer; border:none; background:var(--navy);
+    color:#fff; padding:9px 15px; border-radius:var(--radius-pill); font-size:12.5px; font-weight:800;
+    transition:transform .15s ease;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn svg{width:14px; height:14px;}
+  .btn.coral{background:var(--coral);} .btn.green{background:var(--gt-green-deep);}
+  .btn.violet{background:var(--violet);}
+  .btn.ghost{background:#fff; color:var(--ink); border:1.5px solid var(--line);}
+  .sect.dark .btn.ghost{background:rgba(255,255,255,.09); color:#fff; border-color:rgba(255,255,255,.24);}
+  .btn.sm{padding:7px 13px; font-size:12px;}
+  .timer-pill{display:inline-flex; align-items:center; gap:7px; background:var(--paper-soft);
+    border:1.5px solid var(--line); color:var(--ink); padding:8px 14px; border-radius:var(--radius-pill);
+    font-size:12.5px; font-weight:800; cursor:pointer; font-variant-numeric:tabular-nums;}
+  .timer-pill.run{background:var(--coral); border-color:var(--coral); color:#fff;}
+  .sample{background:var(--paper-soft); border-left:3px solid var(--accent); border-radius:0 12px 12px 0;
+    padding:13px 15px; font-size:13.5px; line-height:1.65;}
+  .sample .lbl{display:block; font-size:9.5px; text-transform:uppercase; letter-spacing:.9px;
+    font-weight:800; color:var(--accent-dark); margin-bottom:5px;}
+  .sample em{color:var(--accent-dark); font-style:normal; font-weight:800;}
+
+  /* opine práctica */
+  .ocard{background:linear-gradient(165deg,var(--violet-soft),#fff); border:1.5px solid #E2DBFF;
+    border-radius:var(--radius-card); padding:16px; margin-bottom:12px;}
+  .oc-top{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .oc-av{width:34px; height:34px; border-radius:50%; background:var(--violet); color:#fff; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px;}
+  .oc-name{font-size:11.5px; font-weight:800; color:var(--violet); margin:0; line-height:1.3;}
+  .oc-role{font-size:11px; color:var(--ink-soft); margin:0;}
+  .oc-q{font-size:14px; font-style:italic; margin:0 0 12px; line-height:1.5;}
+  .sl-box{background:#fff; border:1px solid #E2DBFF; border-radius:12px; padding:12px 14px; margin-bottom:11px;}
+  .sl-ends{display:flex; justify-content:space-between; gap:12px; font-size:9.5px; text-transform:uppercase;
+    letter-spacing:.7px; font-weight:800; color:#B3AC98; margin-bottom:6px;}
+  .sl-ends span:last-child{text-align:right;}
+  input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:999px;
+    background:linear-gradient(90deg,var(--coral),#E8DFCE,var(--gt-green)); outline:none; cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:24px; height:24px; border-radius:50%;
+    background:var(--violet); border:3px solid #fff; box-shadow:0 2px 8px rgba(108,92,231,.45);}
+  input[type=range]::-moz-range-thumb{width:24px; height:24px; border-radius:50%; background:var(--violet);
+    border:3px solid #fff; box-shadow:0 2px 8px rgba(108,92,231,.45);}
+  .sl-read{display:flex; align-items:baseline; gap:8px; margin-top:8px;}
+  .sl-num{font-size:20px; font-weight:800; color:var(--violet); font-variant-numeric:tabular-nums; line-height:1;}
+  .sl-word{font-size:12px; font-weight:800; color:var(--ink-soft);}
+
+  /* ===== RECORDER ===== */
+  .rec{background:linear-gradient(140deg,#12161F,#1B1030); color:#fff; border-radius:var(--radius-card);
+    padding:18px; margin-top:6px;}
+  .rec h4{margin:0 0 4px; font-size:15px; font-weight:800;}
+  .rec p{margin:0 0 14px; font-size:13px; color:rgba(255,255,255,.7);}
+  .rec-row{display:flex; align-items:center; gap:11px; flex-wrap:wrap;}
+  .rec-dot{width:11px; height:11px; border-radius:50%; background:#555; flex-shrink:0;}
+  .rec-dot.live{background:var(--coral); animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .rec audio{width:100%; margin-top:12px;}
+  .rec .warn{font-size:11.5px; color:rgba(255,255,255,.5); margin-top:10px;}
+
+  /* ===== CLOSING ===== */
+  .close-list{list-style:none; margin:0 0 18px; padding:0;}
+  .close-list li{display:flex; align-items:center; gap:11px; padding:11px 13px; margin-bottom:8px;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.13); border-radius:12px;
+    font-size:14px; font-weight:700;}
+  .close-list li .box{width:22px; height:22px; border-radius:7px; border:2px solid rgba(255,255,255,.3);
+    flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+  .close-list li.done .box{background:var(--gt-green); border-color:var(--gt-green);}
+  .close-list li.done .box svg{width:13px; height:13px; color:var(--navy);}
+  .close-list li.done{color:#fff;}
+  .close-list li:not(.done){color:rgba(255,255,255,.5);}
+  .close-msg{font-size:16px; font-weight:800; line-height:1.5; margin:0 0 6px;}
+  .close-sub{font-size:13.5px; color:rgba(255,255,255,.7); margin:0;}
+  .big-num{font-size:44px; font-weight:800; color:var(--accent); line-height:1; font-variant-numeric:tabular-nums;}
+
+  /* ===== FOOTER ===== */
+  .foot{position:fixed; bottom:0; left:0; right:0; z-index:45; background:rgba(247,244,236,.95);
+    backdrop-filter:blur(10px); border-top:1px solid var(--line); padding:9px 0;}
+  .foot-in{max-width:720px; margin:0 auto; padding:0 16px; display:flex; align-items:center; gap:14px;
+    font-size:12px; font-weight:800; color:var(--ink-soft); flex-wrap:wrap;}
+  .foot b{color:var(--ink); font-size:14px; font-variant-numeric:tabular-nums;}
+
+  @media (min-width:760px){
+    body{font-size:15.5px;}
+    .sect{padding:26px 24px;}
+  }
+  @media print{
+    body{background:#fff; padding:0;}
+    .top,.foot,.btn,.rate,.fc-tabs,.timer-pill,.rec{display:none !important;}
+    .hero,.sect.dark{background:#fff !important; color:#000 !important; border:1px solid #000 !important;}
+    .hero h1,.hero p,.hero .kick,.close-msg,.close-sub,.close-list li{color:#000 !important;}
+    .fc .back,.acc .body{display:block !important;}
+    .sect{break-inside:avoid; page-break-inside:avoid; box-shadow:none; margin:12px 0;}
+    .fc,.clip,.gx,.qcard,.ocard,.acc{break-inside:avoid; page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top-in">
+    <span class="mark">GT</span>
+    <b id="topLabel">PRACTICE SESSION</b>
+    <span class="lvl" id="topLvl">B1.1</span>
+  </div>
+  <div class="rail"><div class="fill" id="fill"></div></div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="kick" id="heroKick"></p>
+    <h1 id="heroTitle"></h1>
+    <p id="heroSub"></p>
+    <div class="how" id="heroHow"></div>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<div class="foot">
+  <div class="foot-in">
+    <span>Progress <b id="fProg">0%</b></span>
+    <span>Cards <b id="fCards">0/0</b></span>
+    <span>Grammar <b id="fGram">0/0</b></span>
+    <span>Answered aloud <b id="fSpoken">0/0</b></span>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   ▼▼▼  ÚNICA ZONA EDITABLE  ▼▼▼
+   ===================================================================== */
+const PRACTICE = {
+  level:"A2.2", accent:"a2",
+  label:"SESSION 6 · PRACTICE",
+  kicker:"Practice on your own · 25 minutes",
+  title:"Shorts at the Office: The 2026 Fight",
+  subtitle:"Same words, same grammar, no teacher. Say everything out loud — reading it in your head does not count.",
+  how:"<b>How this works:</b> try to answer <b>before</b> you open anything. Every answer is hidden on purpose. Say it out loud first, then check. If you open the answer first, you are practising reading, not speaking.",
+
+  recall:{
+    minutes:6,
+    words:[
+      {w:"shorts", d:"short pants that end above the knee.", e:"He wore shorts to the warehouse until they banned it."},
+      {w:"dress code", d:"the official rules about what you can wear at work.", e:"The dress code changed again this year."},
+      {w:"heat", d:"a high temperature, especially uncomfortable weather.", e:"The heat in the plant is worse in July."},
+      {w:"respect", d:"polite regard for someone or something.", e:"A dress code can show respect for clients."},
+      {w:"image", d:"how a company or person appears to others.", e:"The company cares a lot about its image."},
+      {w:"comfort", d:"a state of physical ease, without pain or stress.", e:"Comfort should matter more than people think."},
+      {w:"rule", d:"an official instruction about what you must or must not do.", e:"Nobody explained the reason for the rule."},
+      {w:"client", d:"a company or person who pays for services.", e:"A client is visiting the plant on Thursday."},
+      {w:"uniform", d:"a standard set of clothes everyone wears.", e:"A uniform would actually be simpler than all these rules."},
+      {w:"generation", d:"a group of people born and raised around the same time.", e:"Every generation has a different opinion about this."}
+    ],
+    verbs:[
+      {w:"wear", d:"to have clothes on your body.", e:"She wears the same style every day."},
+      {w:"allow", d:"to give permission for something.", e:"They don't allow open shoes in the plant."},
+      {w:"ban", d:"to officially forbid something.", e:"HR banned shorts starting this month."},
+      {w:"complain", d:"to say you are unhappy about a rule or situation.", e:"A few people complained, but nothing changed."},
+      {w:"judge", d:"to form an opinion about someone, often unfairly.", e:"People judge you fast based on what you wear."},
+      {w:"sweat", d:"to produce sweat because of heat or nerves.", e:"He sweats through his shirt by 10am in summer."},
+      {w:"change", d:"to make or become different.", e:"They finally changed the rule after the complaints."},
+      {w:"relax", d:"to make a rule less strict.", e:"They relaxed the rule for Fridays only."},
+      {w:"enforce", d:"to make sure a rule is followed.", e:"Some managers enforce it more than others."},
+      {w:"argue", d:"to disagree with someone, sometimes with feeling.", e:"They argued about it for almost ten minutes."}
+    ],
+    phrases:[
+      {w:"It depends on the day", d:"Used when the answer changes depending on the situation.", e:"Shorts at the office? It depends on the day, honestly."},
+      {w:"That's just my opinion", d:"Used to soften a strong statement.", e:"Dress codes are about control — but that's just my opinion."},
+      {w:"Each to their own", d:"Used to accept that people can disagree without conflict.", e:"You like the rule, I don't. Each to their own."}
+    ]
+  },
+
+  listening:{
+    minutes:6,
+    clips:[
+      {title:"Clip A", who:"Someone reacts to a new no-shorts rule", src:"",
+       script:"Starting Monday, no shorts in the office — that's the new rule. Honestly, it's thirty-eight degrees some days, and that's not comfort, that's survival. They say it's about image, not comfort, but that's just my opinion — I think it's more about control. Each to their own, I guess, but I still don't get it.",
+       qs:[{q:"What is the new rule?", a:"No shorts allowed in the office, starting Monday."},
+           {q:"What does the speaker think the rule is really about?", a:"Control, not image — that's their opinion."}]},
+      {title:"Clip B", who:"Someone questions why the rules are different for men and women", src:"",
+       script:"Can I ask something? Why are the rules different for men and women anyway? They enforce the same dress code every day, client or not, but somehow it's stricter for one group. It depends on the day, they say, but that doesn't really answer the question. Each to their own opinion, but I think it's unfair.",
+       qs:[{q:"What question does the speaker ask?", a:"Why the dress code rules are different for men and women."},
+           {q:"What does the speaker think about it?", a:"That it's unfair."}]}
+    ]
+  },
+
+  grammar:{
+    minutes:4,
+    point:"too / enough",
+    items:[
+      {q:"Shorts are ___ casual for a client visit, in my opinion.", o:["too","enough","very"], c:0,
+       ok:"Right. <em>Too casual</em> means more casual than acceptable.", no:"Use <em>too</em> before the adjective: <em>too casual</em>."},
+      {q:"This shirt isn't formal ___ for a meeting with a client.", o:["too","enough","so"], c:1,
+       ok:"Right. <em>Enough</em> goes after the adjective: <em>formal enough</em>.", no:"<em>Enough</em> goes after the adjective: <em>not formal enough</em>."},
+      {q:"The rule is ___ strict, if you ask me.", o:["enough","too","as"], c:1,
+       ok:"Right. <em>Too strict</em> means more strict than it should be.", no:"Use <em>too</em> before the adjective: <em>too strict</em>."},
+      {q:"Is the air conditioning cold ___ in your office?", o:["too","enough","very"], c:1,
+       ok:"Right. <em>Cold enough</em> asks if it's sufficient.", no:"Use <em>enough</em> after the adjective: <em>cold enough</em>."},
+      {q:"Some rules are ___ old-fashioned for 2026.", o:["enough","too","as"], c:1,
+       ok:"Right. <em>Too old-fashioned</em>.", no:"Use <em>too</em> before the adjective: <em>too old-fashioned</em>."}
+    ]
+  },
+
+  speaking:{
+    minutes:8,
+    steps:["Read the question out loud.","Answer out loud for 40 seconds. Do not stop, even if it isn't perfect.","Only then open the sample answer and compare.","Answer once more, using one thing you took from the sample."],
+    questions:[
+      {q:"Shorts at the office: yes or no?",
+       a:"I'd say yes, honestly, as long as they're not too casual for the job. In a factory, comfort should win most days. That's just my opinion, though — I know a lot of people disagree."},
+      {q:"Is a dress code about respect, or about control?",
+       a:"I think it's a bit of both, depending on the company. Some rules really are about respect for clients. But when the rule is too strict for no clear reason, it starts to feel like control instead."},
+      {q:"Are the rules the same for everyone in your company?",
+       a:"Honestly, no — it depends on the day and even the person. Some people get away with more than others, and that's not really enough of a reason to complain, but it does feel unfair sometimes."},
+      {q:"In ten years, will offices still have dress codes?",
+       a:"I think some rules will relax a lot, especially about comfort. But I don't think dress codes disappear completely — companies still care too much about image for that."}
+    ],
+    opine:[
+      {i:"H", n:"Héctor, 52", r:"Plant manager", q:"I don't care what people wear as long as the work gets done. Dress codes are mostly about looking a certain way for nobody in particular.",
+       L:"Right on the number", R:"Too relaxed",
+       a:"I mostly agree with Héctor. If the work gets done well, the rest shouldn't matter that much. But I also think image matters more when clients are actually in the building."}
+    ]
+  },
+
+  recording:{minutes:2, prompt:"Record 45 seconds giving 3 fast opinions about dress code rules, 2 sentences each. Use too or enough at least once."},
+
+  takeOutside:{
+    minutes:2,
+    intro:"Pick at least 2 of these and ask a coworker, a friend, or someone at home this week — for real, out loud, not just in your head.",
+    questions:[
+      "Should shorts be allowed at the office, in your opinion?",
+      "What's the strangest dress code rule you've ever had?",
+      "Do you think dress codes are about respect, or about control?",
+      "Are the rules the same for everyone at your company?",
+      "Do you think offices will still have dress codes in ten years?"
+    ]
+  },
+
+  closing:{
+    title:"Done. That was real practice.",
+    message:"You didn't read English today — you produced it. That's the only part that transfers to a real conversation at work.",
+    next:"Bring one sentence from this file to your next class and use it before your teacher asks."
+  }
+};
+/* =====================================================================
+   ▲▲▲  FIN DE LA ZONA EDITABLE  ▲▲▲
+   ===================================================================== */
+
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const el=(t,c,h)=>{const n=document.createElement(t); if(c)n.className=c; if(h!=null)n.innerHTML=h; return n;};
+const ACC={a1:["#FFB020","#B8790A"],a2:["#D96A28","#A84A15"],b1:["#00C2A0","#00947A"],b2:["#6C5CE7","#4A3BC7"]};
+const ICO={
+  spk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>',
+  chk:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+  mic:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v4"/></svg>',
+  stop:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>'
+};
+function speak(t,rate){ try{ if(!("speechSynthesis" in window))return;
+  speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=rate||0.9;
+  speechSynthesis.speak(u);}catch(e){} }
+
+(function boot(){
+  const a=ACC[PRACTICE.accent]||ACC.b1;
+  document.documentElement.style.setProperty("--accent",a[0]);
+  document.documentElement.style.setProperty("--accent-dark",a[1]);
+  $("#topLabel").textContent=PRACTICE.label; $("#topLvl").textContent=PRACTICE.level;
+  $("#heroKick").textContent=PRACTICE.kicker; $("#heroTitle").innerHTML=PRACTICE.title;
+  $("#heroSub").textContent=PRACTICE.subtitle; $("#heroHow").innerHTML=PRACTICE.how;
+  document.title="Practice — "+PRACTICE.level+" — GT English Training";
+})();
+
+/* ---------- progreso ---------- */
+const STEPS=[]; // {id,label,test}
+function section(o){
+  const s=el("section","sect"+(o.big?" big":"")+(o.dark?" dark":"")); s.dataset.block=o.id;
+  s.innerHTML='<div class="s-head"><div class="s-ico" style="background:'+(o.icoBg||"var(--paper-soft)")+'">'+o.ico+'</div>'+
+    '<div><p class="s-num">'+o.num+'</p><h2 class="s-title">'+o.title+'</h2></div>'+
+    (o.time?'<span class="s-time">'+o.time+'</span>':'')+'</div>'+
+    (o.desc?'<p class="s-desc">'+o.desc+'</p>':'');
+  const body=el("div"); s.appendChild(body); $("#main").appendChild(s); return body;
+}
+function paint(){
+  const done=STEPS.filter(s=>s.test()).length;
+  const pct=STEPS.length?Math.round(done/STEPS.length*100):0;
+  $("#fill").style.width=pct+"%"; $("#fProg").textContent=pct+"%";
+  $$("#closeList li").forEach((li,i)=>{ li.classList.toggle("done", STEPS[i]&&STEPS[i].test()); });
+  const bn=$("#bigNum"); if(bn) bn.textContent=pct+"%";
+}
+
+/* =====================================================================
+   1 · VOCABULARY RECALL
+   ===================================================================== */
+(function(){
+  const R=PRACTICE.recall; if(!R) return;
+  const b=section({id:"recall", num:"Step 1 · Vocabulary recall", title:"Do You Remember?",
+    time:R.minutes+" min", icoBg:"color-mix(in srgb, var(--accent) 12%, transparent)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-dark)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="14" height="16" rx="2.5"/><path d="M7 9h6M7 13h4"/><path d="M21 7v11a2 2 0 0 1-2 2"/></svg>',
+    desc:"Say the meaning out loud <b>before</b> you tap. Tapping first is not practice."});
+  const bar=el("div","fc-bar",'<span class="pill" id="fcPill">0 / 0 revealed</span><span>Tap the speaker to hear it.</span>');
+  b.appendChild(bar);
+  const tabs=el("div","fc-tabs",'<button data-t="words" class="on">10 Words</button><button data-t="verbs">10 Verbs</button><button data-t="phrases">3 Phrases</button>');
+  b.appendChild(tabs);
+  const grid=el("div","fc-grid"); b.appendChild(grid);
+  const SETS={words:R.words, verbs:R.verbs, phrases:R.phrases};
+  const seen=new Set();
+  const TOTAL=R.words.length+R.verbs.length+R.phrases.length;
+  function render(k){
+    grid.innerHTML="";
+    SETS[k].forEach((o,i)=>{
+      const key=k+i;
+      const c=el("button","fc"+(k==="phrases"?" ph":"")+(seen.has(key)?" open":""),
+        '<span class="tap">'+(seen.has(key)?"Revealed":"Tap to reveal")+'</span>'+
+        '<p class="w">'+o.w+'</p>'+
+        '<button class="snd" aria-label="Hear it">'+ICO.spk+'</button>'+
+        '<div class="back"><p class="d">'+o.d+'</p><p class="e">“'+o.e+'”</p></div>');
+      c.addEventListener("click",ev=>{
+        if(ev.target.closest(".snd")) return;
+        c.classList.toggle("open");
+        $(".tap",c).textContent = c.classList.contains("open")?"Revealed":"Tap to reveal";
+        if(c.classList.contains("open")) seen.add(key);
+        upd();
+      });
+      $(".snd",c).addEventListener("click",ev=>{ev.stopPropagation(); speak(o.w.replace(/\s*\(.*?\)/,"")+". "+o.e);});
+      grid.appendChild(c);
+    });
+  }
+  function upd(){ $("#fcPill").textContent=seen.size+" / "+TOTAL+" revealed";
+    $("#fCards").textContent=seen.size+"/"+TOTAL; paint(); }
+  $$("button",tabs).forEach(bt=>bt.addEventListener("click",()=>{
+    $$("button",tabs).forEach(x=>x.classList.remove("on")); bt.classList.add("on"); render(bt.dataset.t);
+  }));
+  render("words"); upd();
+  STEPS.push({id:"recall", label:"Vocabulary recall", test:()=>seen.size>=Math.ceil(TOTAL*0.6)});
+})();
+
+/* =====================================================================
+   2 · LISTENING PRACTICE
+   ===================================================================== */
+(function(){
+  const L=PRACTICE.listening; if(!L||!L.clips||!L.clips.length) return;
+  const b=section({id:"listening", num:"Step 2 · Listening", title:"Listen Twice, Then Check",
+    time:L.minutes+" min", icoBg:"color-mix(in srgb, var(--accent) 12%, transparent)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-dark)" stroke-width="2" stroke-linecap="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><path d="M3 14a2 2 0 0 1 2-2h1v6H5a2 2 0 0 1-2-2z"/><path d="M21 14a2 2 0 0 0-2-2h-1v6h1a2 2 0 0 0 2-2z"/><path d="M18 18v1a3 3 0 0 1-3 3h-2"/></svg>',
+    desc:"Listen at 0.75x first if you need it. Answer out loud, then open the answer. The script is the <b>last</b> thing you open."});
+  let opened=0;
+  L.clips.forEach((c,ci)=>{
+    const d=el("div","clip");
+    d.innerHTML='<h4>'+c.title+'</h4><p class="who">'+c.who+'</p>';
+    if(c.src){
+      d.innerHTML+='<audio controls preload="none" src="'+c.src+'"></audio>'+
+        '<div class="rate"><button data-r="0.75">0.75x</button><button data-r="1" class="on">1x</button></div>';
+    } else {
+      d.innerHTML+='<div class="tts-note">Temporary voice — the recorded audio for this clip is on the way. Use it to practise, but the final version will sound natural.</div>'+
+        '<div class="rate"><button class="btn green sm ttsPlay">'+ICO.play+' Play 0.75x</button>'+
+        '<button class="btn green sm ttsPlay1">'+ICO.play+' Play 1x</button>'+
+        '<button class="btn ghost sm ttsStop">Stop</button></div>';
+    }
+    b.appendChild(d);
+    if(c.src){
+      const au=$("audio",d);
+      $$(".rate button",d).forEach(bt=>bt.addEventListener("click",()=>{
+        $$(".rate button",d).forEach(x=>x.classList.remove("on")); bt.classList.add("on");
+        au.playbackRate=parseFloat(bt.dataset.r);
+      }));
+    } else {
+      $(".ttsPlay",d).addEventListener("click",()=>speak(c.script,0.72));
+      $(".ttsPlay1",d).addEventListener("click",()=>speak(c.script,0.92));
+      $(".ttsStop",d).addEventListener("click",()=>{try{speechSynthesis.cancel();}catch(e){}});
+    }
+    c.qs.forEach((q,qi)=>{
+      const a=el("div","acc",'<button><span>'+(qi+1)+'. '+q.q+'</span><span class="chev">▾</span></button>'+
+        '<div class="body hidden">'+q.a+'</div>');
+      $("button",a).addEventListener("click",()=>{
+        a.classList.toggle("open"); $(".body",a).classList.toggle("hidden");
+        if(a.classList.contains("open")){opened++; paint();}
+      });
+      d.appendChild(a);
+    });
+    const sc=el("div","acc script",'<button><span>Show script</span><span class="chev">▾</span></button>'+
+      '<div class="body hidden">'+c.script+'</div>');
+    $("button",sc).addEventListener("click",()=>{
+      sc.classList.toggle("open"); $(".body",sc).classList.toggle("hidden");
+    });
+    d.appendChild(sc);
+  });
+  const totalQ=L.clips.reduce((n,c)=>n+c.qs.length,0);
+  STEPS.push({id:"listening", label:"Listening practice", test:()=>opened>=totalQ});
+})();
+
+/* =====================================================================
+   3 · GRAMMAR CHECK
+   ===================================================================== */
+(function(){
+  const G=PRACTICE.grammar; if(!G) return;
+  const b=section({id:"grammar", num:"Step 3 · Grammar check", title:"Pick the Right Form",
+    time:G.minutes+" min", icoBg:"rgba(255,90,95,.12)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round"><path d="M12 20l9-9-9-9-9 9 9 9z"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>',
+    desc:"Today's point: <b>"+G.point+"</b>. One try each — read the whole sentence out loud with your answer before you tap."});
+  let right=0, answered=0;
+  G.items.forEach(it=>{
+    const d=el("div","gx",'<p class="q">'+it.q.replace("___","<b>&nbsp;&nbsp;?&nbsp;&nbsp;</b>")+'</p>');
+    const o=el("div","opts");
+    it.o.forEach((opt,i)=>{
+      const bt=el("button",null,opt);
+      bt.addEventListener("click",()=>{
+        if(d.dataset.done) return;
+        d.dataset.done="1"; answered++;
+        const ok = i===it.c;
+        if(ok){ bt.classList.add("ok"); right++; }
+        else { bt.classList.add("no"); $$("button",o)[it.c].classList.add("ok"); }
+        $$("button",o).forEach(x=>{ if(!x.classList.contains("ok")&&!x.classList.contains("no")) x.classList.add("dim"); });
+        d.appendChild(el("div","fb "+(ok?"ok":"no"), (ok?"✓ ":"✗ ")+(ok?it.ok:it.no)));
+        $("#gramScore").textContent=right+" / "+G.items.length+" correct";
+        $("#fGram").textContent=right+"/"+G.items.length;
+        $(".q b",d).innerHTML="&nbsp;"+it.o[it.c]+"&nbsp;";
+        paint();
+      });
+      o.appendChild(bt);
+    });
+    d.appendChild(o); b.appendChild(d);
+  });
+  const sc=el("div","g-score",'<span id="gramScore">0 / '+G.items.length+' correct</span>');
+  b.appendChild(sc);
+  $("#fGram").textContent="0/"+G.items.length;
+  STEPS.push({id:"grammar", label:"Grammar check", test:()=>answered>=G.items.length});
+})();
+
+/* =====================================================================
+   4 · SPEAKING PRACTICE (bloque mayor)
+   ===================================================================== */
+(function(){
+  const S=PRACTICE.speaking; if(!S) return;
+  const b=section({id:"speaking", num:"Step 4 · Speaking · the important one", title:"Answer Out Loud First",
+    big:true, time:S.minutes+" min", icoBg:"rgba(255,90,95,.12)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>',
+    desc:"This is the biggest block for a reason: it is the only one that changes how you speak at work."});
+  const st=el("div","sp-steps");
+  S.steps.forEach((s,i)=>st.appendChild(el("div","sp-step",'<i>'+(i+1)+'</i><span>'+s+'</span>')));
+  b.appendChild(st);
+
+  let spoken=0;
+  const TOTQ=S.questions.length+(S.opine?S.opine.length:0);
+  $("#fSpoken").textContent="0/"+TOTQ;
+  function markSpoken(bt){
+    if(bt.dataset.on) return;
+    bt.dataset.on="1"; bt.classList.add("ok");
+    bt.innerHTML=ICO.chk+" Answered out loud";
+    bt.style.background="rgba(18,161,80,.12)"; bt.style.borderColor="#12A150"; bt.style.color="#12A150";
+    spoken++; $("#fSpoken").textContent=spoken+"/"+TOTQ; paint();
+  }
+  function timerBtn(){
+    const t=el("button","timer-pill","▶ 40s out loud");
+    t.addEventListener("click",()=>{
+      if(t.dataset.run) return;
+      t.dataset.run="1"; t.classList.add("run"); let s=40;
+      t.textContent="00:"+String(s).padStart(2,"0");
+      const iv=setInterval(()=>{ s--; t.textContent="00:"+String(s).padStart(2,"0");
+        if(s<=0){clearInterval(iv); t.classList.remove("run"); delete t.dataset.run; t.textContent="✓ time — again?";}
+      },1000);
+    });
+    return t;
+  }
+  S.questions.forEach((q,i)=>{
+    const c=el("div","qcard",'<p class="qt">'+(i+1)+'. '+q.q+'</p>');
+    const tools=el("div","qtools");
+    tools.appendChild(timerBtn());
+    const mk=el("button","btn ghost sm","I answered out loud");
+    mk.addEventListener("click",()=>markSpoken(mk));
+    tools.appendChild(mk);
+    c.appendChild(tools);
+    const a=el("div","acc",'<button><span>Reveal a sample answer</span><span class="chev">▾</span></button>'+
+      '<div class="body hidden"><div class="sample"><span class="lbl">One possible answer — not the only one</span>'+q.a+'</div></div>');
+    $("button",a).addEventListener("click",()=>{ a.classList.toggle("open"); $(".body",a).classList.toggle("hidden"); });
+    c.appendChild(a);
+    b.appendChild(c);
+  });
+
+  if(S.opine&&S.opine.length){
+    b.appendChild(el("p","s-desc",'<b>Now react to a real opinion.</b> Move the slider to an exact number, then say out loud <em>why that number</em> — not just “I agree”.'));
+    const lab=v=>v<15?"Strongly disagree":v<35?"Disagree":v<46?"Slightly disagree":v<=54?"Right in the middle":v<66?"Slightly agree":v<86?"Agree":"Strongly agree";
+    S.opine.forEach(o=>{
+      const c=el("div","ocard",
+        '<div class="oc-top"><div class="oc-av">'+o.i+'</div><div><p class="oc-name">'+o.n+'</p><p class="oc-role">'+o.r+'</p></div></div>'+
+        '<p class="oc-q">“'+o.q+'”</p>'+
+        '<div class="sl-box"><div class="sl-ends"><span>'+o.L+'</span><span>'+o.R+'</span></div>'+
+        '<input type="range" min="0" max="100" value="50">'+
+        '<div class="sl-read"><span class="sl-num">50</span><span class="sl-word">Right in the middle</span></div></div>');
+      const rng=$("input",c);
+      rng.addEventListener("input",()=>{ $(".sl-num",c).textContent=rng.value; $(".sl-word",c).textContent=lab(+rng.value); });
+      const tools=el("div","qtools");
+      tools.appendChild(timerBtn());
+      const mk=el("button","btn ghost sm","I reacted out loud");
+      mk.addEventListener("click",()=>markSpoken(mk));
+      tools.appendChild(mk);
+      c.appendChild(tools);
+      const a=el("div","acc",'<button><span>Reveal a sample reaction</span><span class="chev">▾</span></button>'+
+        '<div class="body hidden"><div class="sample"><span class="lbl">One possible reaction</span>'+o.a+'</div></div>');
+      $("button",a).addEventListener("click",()=>{ a.classList.toggle("open"); $(".body",a).classList.toggle("hidden"); });
+      c.appendChild(a);
+      b.appendChild(c);
+    });
+  }
+  STEPS.push({id:"speaking", label:"Speaking practice", test:()=>spoken>=Math.ceil(TOTQ*0.7)});
+})();
+
+/* =====================================================================
+   5 · SELF-RECORDING (opcional)
+   ===================================================================== */
+(function(){
+  const R=PRACTICE.recording; if(!R) return;
+  const b=section({id:"rec", num:"Step 5 · Record yourself", title:"Hear What You Sound Like",
+    time:R.minutes+" min", icoBg:"rgba(108,92,231,.13)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v4"/></svg>',
+    desc:"Nothing is uploaded anywhere. The recording stays on your device and disappears when you close this page."});
+  const box=el("div","rec",'<h4>45-second recording</h4><p>'+R.prompt+'</p>'+
+    '<div class="rec-row"><span class="rec-dot" id="rDot"></span>'+
+    '<button class="btn coral sm" id="rBtn">'+ICO.mic+' Start recording</button>'+
+    '<span id="rTime" style="font-weight:800;font-variant-numeric:tabular-nums">00:00</span></div>'+
+    '<audio id="rAudio" controls class="hidden"></audio>'+
+    '<p class="warn" id="rWarn"></p>');
+  b.appendChild(box);
+  let mr=null, chunks=[], iv=null, secs=0, done=false;
+  $("#rBtn",box).addEventListener("click",async ()=>{
+    if(mr && mr.state==="recording"){
+      mr.stop(); return;
+    }
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      chunks=[]; mr=new MediaRecorder(stream);
+      mr.ondataavailable=e=>chunks.push(e.data);
+      mr.onstop=()=>{
+        clearInterval(iv); $("#rDot",box).classList.remove("live");
+        $("#rBtn",box).innerHTML=ICO.mic+" Record again";
+        const blob=new Blob(chunks,{type:mr.mimeType||"audio/webm"});
+        const a=$("#rAudio",box); a.src=URL.createObjectURL(blob); a.classList.remove("hidden");
+        stream.getTracks().forEach(t=>t.stop());
+        done=true; paint();
+      };
+      mr.start(); secs=0;
+      $("#rDot",box).classList.add("live");
+      $("#rBtn",box).innerHTML=ICO.stop+" Stop";
+      $("#rTime",box).textContent="00:00";
+      iv=setInterval(()=>{ secs++; $("#rTime",box).textContent="00:"+String(secs).padStart(2,"0");
+        if(secs>=60 && mr.state==="recording") mr.stop(); },1000);
+    }catch(e){
+      $("#rWarn",box).textContent="Your browser blocked the microphone. Allow microphone access for this file, or skip this step.";
+    }
+  });
+  STEPS.push({id:"rec", label:"Self-recording", test:()=>done});
+})();
+
+/* =====================================================================
+   5b · TAKE IT OUTSIDE (real-world transfer — ask OTHER people, not the app)
+   ===================================================================== */
+(function(){
+  const T=PRACTICE.takeOutside; if(!T) return;
+  const b=section({id:"outside", num:"Step 6 · Take it outside", title:"Ask Someone Else This Week",
+    time:T.minutes+" min", icoBg:"color-mix(in srgb, var(--accent) 12%, transparent)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    desc:T.intro||"Pick at least 2 of these and ask a real person this week — a coworker, a client, someone at home."});
+  const g=el("div","oq-grid"); g.style.cssText="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))";
+  let asked=0;
+  T.questions.forEach((q,i)=>{
+    const card=el("div","goal",'<span class="lbl">Question '+(i+1)+'</span><p style="margin:6px 0 10px;font-size:14px;font-weight:700">'+q+'</p>'+
+      '<button class="btn ghost sm askedBtn">☐ I asked this</button>');
+    const bt=$(".askedBtn",card);
+    bt.addEventListener("click",()=>{
+      const on=bt.classList.toggle("on");
+      bt.textContent = on ? "✓ I asked this" : "☐ I asked this";
+      asked += on?1:-1; paint();
+    });
+    g.appendChild(card);
+  });
+  b.appendChild(g);
+  STEPS.push({id:"outside", label:"Take it outside", test:()=>asked>=2});
+})();
+
+/* =====================================================================
+   6 · CLOSING
+   ===================================================================== */
+(function(){
+  const C=PRACTICE.closing;
+  const b=section({id:"close", num:"Done", title:C.title, dark:true, icoBg:"rgba(255,255,255,.1)",
+    ico:'<svg viewBox="0 0 24 24" fill="none" stroke="var(--gt-green)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'});
+  const ul=el("ul","close-list"); ul.id="closeList";
+  STEPS.forEach(s=>ul.appendChild(el("li",null,'<span class="box">'+ICO.chk+'</span><span>'+s.label+'</span>')));
+  b.appendChild(ul);
+  b.appendChild(el("div",null,'<p class="big-num" id="bigNum" style="margin:18px 0 2px">0%</p>'+
+    '<p style="margin:0 0 16px;font-size:11px;text-transform:uppercase;letter-spacing:1.2px;font-weight:800;color:rgba(255,255,255,.5)">of this practice completed</p>'));
+  b.appendChild(el("p","close-msg",C.message));
+  b.appendChild(el("p","close-sub",C.next));
+  paint();
+})();
+paint();
+</script>
+</body>
+</html>
